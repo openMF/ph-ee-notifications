@@ -1,0 +1,6 @@
+/Users/subhampramanik/open/IMEX/ph-ee-connector-notifications/src/main/java/org/mifos/connector/notification/zeebe/ZeebeMessages.java
+/Users/subhampramanik/open/IMEX/ph-ee-connector-notifications/src/main/java/org/mifos/connector/notification/zeebe/ZeebeVariables.java
+/Users/subhampramanik/open/IMEX/ph-ee-connector-notifications/src/main/java/org/mifos/connector/notification/camel/config/CamelContextConfig.java
+/Users/subhampramanik/open/IMEX/ph-ee-connector-notifications/src/main/java/org/mifos/connector/notification/NotificationsConnectorApplication.java
+/Users/subhampramanik/open/IMEX/ph-ee-connector-notifications/src/main/java/org/mifos/connector/notification/camel/routes/OperationsRouteBuilder.java
+/Users/subhampramanik/open/IMEX/ph-ee-connector-notifications/src/main/java/org/mifos/connector/notification/zeebe/ZeebeClientConfiguration.java
