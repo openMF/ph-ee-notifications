@@ -1,7 +1,0 @@
-org/mifos/connector/notification/camel/config/CamelContextConfig$1.class
-org/mifos/connector/notification/zeebe/ZeebeVariables.class
-org/mifos/connector/notification/camel/routes/OperationsRouteBuilder.class
-org/mifos/connector/notification/camel/config/CamelContextConfig.class
-org/mifos/connector/notification/NotificationsConnectorApplication.class
-org/mifos/connector/notification/zeebe/ZeebeMessages.class
-org/mifos/connector/notification/zeebe/ZeebeClientConfiguration.class
