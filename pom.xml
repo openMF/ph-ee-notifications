@@ -28,9 +28,16 @@
         <spring-boot.version>2.2.2.RELEASE</spring-boot.version>
         <spring.version>5.2.2.RELEASE</spring.version>
 
+
+
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>com.telerivet</groupId>
+            <artifactId>TelerivetAPIClient</artifactId>
+            <version>1.5.0</version>
+        </dependency>
         <dependency>
             <groupId>org.mifos</groupId>
             <artifactId>ph-ee-connector-common</artifactId>
@@ -77,9 +84,9 @@
             <version>20190722</version>
         </dependency>
         <dependency>
-            <groupId>io.camunda</groupId>
+            <groupId>io.zeebe</groupId>
             <artifactId>zeebe-client-java</artifactId>
-            <version>1.1.0</version>
+            <version>0.26.0</version>
         </dependency>
         <dependency>
             <groupId>com.auth0</groupId>
