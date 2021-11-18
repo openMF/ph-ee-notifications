@@ -1,5 +1,5 @@
 camel:
-  server-port: 5000
+  server-port: 6000
   springboot:
     main-run-controller: true
   dataformat:
@@ -13,3 +13,11 @@ zeebe:
     evenly-allocated-max-jobs: "#{${zeebe.client.max-execution-threads} / ${zeebe.client.number-of-workers}}"
   broker:
     contactpoint: "localhost:26500"
+
+provider:
+  telerivet:
+    enabled: true
+    api-key: eKiC1_JWdKy7eaTGQFHxXXjXjacr60W9Zntl
+    project-id: PJ5ff552ce01d2978c
+  rapidpro:
+    enabled: false
