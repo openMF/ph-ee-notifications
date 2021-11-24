@@ -13,3 +13,10 @@ zeebe:
     evenly-allocated-max-jobs: "#{${zeebe.client.max-execution-threads} / ${zeebe.client.number-of-workers}}"
   broker:
     contactpoint: "localhost:26500"
+
+provider:
+  telerivet:
+    enabled: true
+    id: 3
+  rapidpro:
+    enabled: false
