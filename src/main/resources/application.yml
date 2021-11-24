@@ -17,7 +17,6 @@ zeebe:
 provider:
   telerivet:
     enabled: true
-    api-key: eKiC1_JWdKy7eaTGQFHxXXjXjacr60W9Zntl
-    project-id: PJ5ff552ce01d2978c
+    id: 3
   rapidpro:
     enabled: false

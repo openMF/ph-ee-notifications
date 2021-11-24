@@ -12,6 +12,7 @@ public class HealthCheck extends RouteBuilder {
     @Override
     public void configure() throws Exception {
         from("rest:GET:/")
+                .to("direct:success-notifications")
                 .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(200))
                 .setBody(constant("GET Good"));
 
