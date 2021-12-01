@@ -1,10 +1,8 @@
 FROM openjdk:8
 EXPOSE 5000
 
-COPY target/*.jar .
+COPY build/libs/*.jar .
 CMD java -jar *.jar
-
-CMD ["mvn","clean","install"]
 
 
 
