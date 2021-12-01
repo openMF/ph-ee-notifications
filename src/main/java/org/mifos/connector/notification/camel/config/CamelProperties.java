@@ -5,7 +5,7 @@ package org.mifos.connector.notification.camel.config;
  */
 public class CamelProperties {
 
-    private CamelProperties() {}
+	private CamelProperties() {}
 
     public static final String ORIGIN_DATE = "originDate";
     public static final String AUTH_HOST = "authUrl";
