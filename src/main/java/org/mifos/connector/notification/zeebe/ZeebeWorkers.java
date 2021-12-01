@@ -2,6 +2,10 @@ package org.mifos.connector.notification.zeebe;
 
 import io.zeebe.client.ZeebeClient;
 
+import org.apache.camel.CamelContext;
+import org.apache.camel.Exchange;
+import org.apache.camel.ProducerTemplate;
+import org.apache.camel.support.DefaultExchange;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +19,12 @@ public class ZeebeWorkers {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
+    private ProducerTemplate producerTemplate;
+
+    @Autowired
+    private CamelContext camelContext;
+
+    @Autowired
     private ZeebeClient zeebeClient;
 
     @Value("${zeebe.client.evenly-allocated-max-jobs}")
@@ -23,74 +33,61 @@ public class ZeebeWorkers {
     @PostConstruct
     public void setupWorkers() {
         zeebeClient.newWorker()
-                    .jobType("create-message-to-send")
+                .jobType("transaction-failure")
                 .handler((client, job) -> {
                     logger.info("Job '{}' started from process '{}' with key {}", job.getType(), job.getBpmnProcessId(), job.getKey());
+                    Exchange exchange = new DefaultExchange(camelContext);
+                    producerTemplate.send("direct:create-messages", exchange);
                     client.newCompleteCommand(job.getKey())
                             .send()
                     ;
                 })
-                .name("create-message-to-send")
+                .name("transaction-failure")
                 .maxJobsActive(workerMaxJobs)
                 .open();
 
+
+//        zeebeClient.newWorker()
+//                .jobType("transaction-success")
+//                .handler((client, job) -> {
+//                    logger.info("Job '{}' started from process '{}' with key {}", job.getType(), job.getBpmnProcessId(), job.getKey());
+//                    client.newCompleteCommand(job.getKey())
+//                            .send()
+//                    ;
+//                })
+//                .name("transaction-success")
+//                .maxJobsActive(workerMaxJobs)
+//                .open();
+
         zeebeClient.newWorker()
-                .jobType("send-message-to-server")
+                .jobType("notification-service")
                 .handler((client, job) -> {
                     logger.info("Job '{}' started from process '{}' with key {}", job.getType(), job.getBpmnProcessId(), job.getKey());
+                    Exchange exchange = new DefaultExchange(camelContext);
+                    producerTemplate.send("direct:send-notifications", exchange);
                     client.newCompleteCommand(job.getKey())
                             .send()
                     ;
                 })
-                .name("send-message-to-server")
-                .maxJobsActive(workerMaxJobs)
-                .open();
-
-        zeebeClient.newWorker()
-                .jobType("get-delivery-status")
-                .handler((client, job) -> {
-                    logger.info("Job '{}' started from process '{}' with key {}", job.getType(), job.getBpmnProcessId(), job.getKey());
-                    client.newCompleteCommand(job.getKey())
-                            .send()
-                    ;
-                })
-                .name("get-delivery-status")
-                .maxJobsActive(workerMaxJobs)
-                .open();
-
-        zeebeClient.newWorker()
-                .jobType("waiting-for-callback")
-                .handler((client, job) -> {
-                    logger.info("Job '{}' started from process '{}' with key {}", job.getType(), job.getBpmnProcessId(), job.getKey());
-                    client.newCompleteCommand(job.getKey())
-                            .send()
-                    ;
-                })
-                .name("waiting-for-callback")
+                .name("notification-service")
                 .maxJobsActive(workerMaxJobs)
                 .open();
 
 
+
         zeebeClient.newWorker()
-                .jobType("send-sms-success")
+                .jobType("get-notification-status")
                 .handler((client, job) -> {
                     logger.info("Job '{}' started from process '{}' with key {}", job.getType(), job.getBpmnProcessId(), job.getKey());
-
+                    Exchange exchange = new DefaultExchange(camelContext);
+                    producerTemplate.send("direct:delivery-notifications", exchange);
                     client.newCompleteCommand(job.getKey())
                             .send()
                             .join();
                 })
-                .name("send-sms-success")
+                .name("get-notification-status")
                 .maxJobsActive(workerMaxJobs)
                 .open();
 
-        zeebeClient.newWorker()
-                .jobType("send-sms-failure")
-                .handler((client, job) -> {
-                    logger.info("Job '{}' started from process '{}' with key {}", job.getType(), job.getBpmnProcessId(), job.getKey());
-                })
-                .name("send-sms-failure")
-                .maxJobsActive(workerMaxJobs)
-                .open();
     }
 }

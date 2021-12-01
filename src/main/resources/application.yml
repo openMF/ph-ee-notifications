@@ -1,5 +1,5 @@
 camel:
-  server-port: 5000
+  server-port: 6000
   springboot:
     main-run-controller: true
   dataformat:
@@ -11,6 +11,7 @@ zeebe:
     max-execution-threads: 100
     number-of-workers: 5
     evenly-allocated-max-jobs: "#{${zeebe.client.max-execution-threads} / ${zeebe.client.number-of-workers}}"
+    ttl: 30000
   broker:
     contactpoint: "localhost:26500"
 
@@ -20,3 +21,8 @@ provider:
     id: 3
   rapidpro:
     enabled: false
+
+hostconfig:
+  host-address: 127.0.0.1
+  protocol: http
+  port: 9191
