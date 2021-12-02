@@ -36,7 +36,7 @@ public class SendMessageRoute extends RouteBuilder {
     private String protocol;
 
     @Value("${hostconfig.host-address}")
-    private int address;
+    private String address;
 
     @Value("${hostconfig.port}")
     private int port;
@@ -63,7 +63,7 @@ public class SendMessageRoute extends RouteBuilder {
                     })
                     .setHeader(Exchange.HTTP_METHOD, simple("POST"))
                     .setHeader(Exchange.CONTENT_TYPE, constant("application/json"))
-                    .to(String.format("%s://%d:%d/sms/?bridgeEndpoint=true", protocol, address, port))
+                    .to(String.format("%s://%s:%d/sms/?bridgeEndpoint=true", protocol, address, port))
                     .log(LoggingLevel.INFO, "Sending sms to message gateway completed")
                     .process(exchange ->{
                         String id = "123";
