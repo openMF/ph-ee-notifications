@@ -1,4 +1,4 @@
-package org.mifos.connector.notification.sms;
+package org.mifos.connector.notification.provider.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
