@@ -1,11 +1,8 @@
 package org.mifos.connector.notification.sms.message;
 
-import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.mifos.connector.notification.sms.ProviderConfig;
+import org.mifos.connector.notification.provider.config.ProviderConfig;
 import org.mifos.connector.notification.zeebe.ZeebeVariables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
