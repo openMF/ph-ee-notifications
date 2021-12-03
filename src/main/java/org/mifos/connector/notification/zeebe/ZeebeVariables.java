@@ -10,4 +10,5 @@ public class ZeebeVariables {
 
     public static final String TRANSACTION_ID = "transactionId";
     public static final String DELIVERY_STATUS = "notification-request";
+    public static final String DELIVERY_MESSAGE = "deliveryMessage";
 }

@@ -38,7 +38,7 @@ public class SendMessageRoute extends RouteBuilder {
     @Value("${hostconfig.protocol}")
     private String protocol;
 
-    @Value("${hostconfig.host-address}")
+    @Value("${hostconfig.host}")
     private String address;
 
     @Value("${hostconfig.port}")
