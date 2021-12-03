@@ -37,9 +37,10 @@ public class ZeebeWorkers {
                 .handler((client, job) -> {
                     logger.info("Job '{}' started from process '{}' with key {}", job.getType(), job.getBpmnProcessId(), job.getKey());
                     Exchange exchange = new DefaultExchange(camelContext);
-                    producerTemplate.send("direct:create-messages", exchange);
+                   producerTemplate.send("direct:create-messages", exchange);
                     client.newCompleteCommand(job.getKey())
                             .send()
+                            .join()
                     ;
                 })
                 .name("transaction-failure")
@@ -67,13 +68,12 @@ public class ZeebeWorkers {
                     producerTemplate.send("direct:send-notifications", exchange);
                     client.newCompleteCommand(job.getKey())
                             .send()
+                            .join()
                     ;
                 })
                 .name("notification-service")
                 .maxJobsActive(workerMaxJobs)
                 .open();
-
-
 
         zeebeClient.newWorker()
                 .jobType("get-notification-status")
@@ -81,9 +81,10 @@ public class ZeebeWorkers {
                     logger.info("Job '{}' started from process '{}' with key {}", job.getType(), job.getBpmnProcessId(), job.getKey());
                     Exchange exchange = new DefaultExchange(camelContext);
                     producerTemplate.send("direct:delivery-notifications", exchange);
-                    client.newCompleteCommand(job.getKey())
-                            .send()
-                            .join();
+                   client.newCompleteCommand(job.getKey())
+                           .send()
+                           .join()
+                   ;
                 })
                 .name("get-notification-status")
                 .maxJobsActive(workerMaxJobs)
