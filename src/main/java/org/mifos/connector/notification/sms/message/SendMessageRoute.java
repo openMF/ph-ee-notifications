@@ -1,5 +1,6 @@
 package org.mifos.connector.notification.sms.message;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.zeebe.client.ZeebeClient;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
@@ -28,6 +29,9 @@ public class SendMessageRoute extends RouteBuilder {
     @Autowired
     private ZeebeClient zeebeClient;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     @Value("${zeebe.client.ttl}")
     private int timeToLive;
 
@@ -52,14 +56,15 @@ public class SendMessageRoute extends RouteBuilder {
                     .process(exchange ->{
                         JSONObject response = new JSONObject();
                         int providerId = providerConfig.getProviderConfig();
-                        response.put("internalId", "234");
-                        response.put("mobileNumber", "2343432");
-                        response.put("message", exchange.getProperty(DELIVERY_MESSAGE));
+                        response.put("internalId", "123");
+                        response.put("mobileNumber", "+15005550012");
+                        response.put("message",  "Message to be Sent");
                         response.put("providerId", providerId);
                         JSONArray ja = new JSONArray();
                             exchange.getIn().setBody(ja.put(response).toString());
 
                     })
+                    .log("${body}")
                     .setHeader(Exchange.HTTP_METHOD, simple("POST"))
                     .setHeader(Exchange.CONTENT_TYPE, constant("application/json"))
                     .to(String.format("%s://%s:%d/sms/?bridgeEndpoint=true", protocol, address, port))
@@ -70,7 +75,6 @@ public class SendMessageRoute extends RouteBuilder {
                                 .messageName(DELIVERY_STATUS)
                                 .correlationKey(id)
                                 .timeToLive(Duration.ofMillis(timeToLive))
-                                .variables("Waiting for Callback")
                                 .send()
                                 .join();
                     })

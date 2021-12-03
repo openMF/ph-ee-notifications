@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import static org.mifos.connector.notification.camel.config.CamelProperties.DELIVERY_MESSAGE;
+import static org.mifos.connector.notification.camel.config.CamelProperties.PROVIDER_ID;
 
 @Component
 public class CreateMessageRoute extends RouteBuilder {
@@ -26,9 +27,9 @@ public class CreateMessageRoute extends RouteBuilder {
                     .id("create-messages")
                     .log(LoggingLevel.INFO, "Creating message")
                     .process(exchange ->{
-                        exchange.setProperty(DELIVERY_MESSAGE, "message to be sent");
+                        exchange.setProperty(DELIVERY_MESSAGE, "Message to be Sent");
                     })
-                    .log(LoggingLevel.INFO, "Creating message completed")
+                    .log(LoggingLevel.INFO, "Creating message completed with message :${exchangeProperty."+DELIVERY_MESSAGE+"}")
                    ;
 
         }

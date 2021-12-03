@@ -62,7 +62,7 @@ public class CamelProperties {
     public static final String CURRENCY_PAIR_RATE = "currencyPairRate";
     public static final String SETTLEMENT_STATUS = "settlementStatus";
     public static final int PROVIDER_ID = 1;
-    public static final String DELIVERY_STATUS = "deliveryStatus";
-    public static final String DELIVERY_MESSAGE = "deliveryMessage";
+    public static  String DELIVERY_STATUS = "deliveryStatus";
+    public static  String DELIVERY_MESSAGE = "deliveryMessage";
 
 }
