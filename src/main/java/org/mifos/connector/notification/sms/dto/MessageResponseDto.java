@@ -16,33 +16,42 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.mifos.connector.notification.sms.delivery;
+package org.mifos.connector.notification.sms.dto;
 
-
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Date;
 
 
-public class MessageResponse {
+public class MessageResponseDto {
 
-	private final String id;
-	private final String externalId;
-	private final Date deliveredOnDate;
-	private static Integer deliveryStatus;
-	private final Boolean hasError;
-	private final String errorMessage;
+	@JsonProperty("id")
+	private String id;
 
-	public MessageResponse(final String id, final String externalId, final Date deliveredOnDate,
-                           final Integer deliveryStatus, final String errorMessage) {
-		this.id = id;
-		this.externalId = externalId;
-		this.deliveredOnDate = deliveredOnDate;
-		this.deliveryStatus = deliveryStatus;
-		if (deliveryStatus.equals("FAILED")){
-			this.hasError = Boolean.TRUE;
-		} else {
-			this.hasError = Boolean.FALSE;
-		}
-		this.errorMessage = errorMessage;
+	@JsonProperty("externalId")
+	private String externalId;
+
+	@JsonProperty("deliveredOnDate")
+	private Date deliveredOnDate;
+
+	@JsonProperty("deliveryStatus")
+	private Integer deliveryStatus;
+
+	@JsonProperty("errorMessage")
+	private String errorMessage;
+
+
+	public MessageResponseDto() {
+
+	}
+	@Override
+	public String toString() {
+		return "MessageResponseDto{" +
+				"id='" + id + '\'' +
+				", externalId='" + externalId + '\'' +
+				", deliveredOnDate=" + deliveredOnDate +
+				", deliveryStatus='" + deliveryStatus + '\'' +
+				", errorMessage=" + errorMessage + '\'' +
+				'}';
 	}
 
 	public String getId() {
@@ -57,12 +66,8 @@ public class MessageResponse {
 		return deliveredOnDate;
 	}
 
-	public static Integer getDeliveryStatus() {
+	public Integer getDeliveryStatus() {
 		return deliveryStatus;
-	}
-
-	public Boolean getHasError() {
-		return hasError;
 	}
 
 	public String getErrorMessage() {

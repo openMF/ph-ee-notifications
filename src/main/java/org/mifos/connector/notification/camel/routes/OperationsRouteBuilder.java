@@ -1,6 +1,6 @@
 package org.mifos.connector.notification.camel.routes;
 
-import io.zeebe.client.ZeebeClient;
+import io.camunda.zeebe.client.ZeebeClient;
 import org.apache.camel.LoggingLevel;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;

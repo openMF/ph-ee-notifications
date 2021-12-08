@@ -1,11 +1,13 @@
 package org.mifos.connector.notification.zeebe;
 
-import io.zeebe.client.ZeebeClient;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.camunda.zeebe.client.ZeebeClient;
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.support.DefaultExchange;
+import org.mifos.connector.common.channel.dto.TransactionChannelCollectionRequestDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.mifos.connector.notification.camel.config.CamelProperties.*;
+import static org.mifos.connector.notification.zeebe.ZeebeVariables.*;
+import static org.mifos.connector.notification.zeebe.ZeebeVariables.TRANSACTION_ID;
 
 @Component
 public class ZeebeWorkers {
@@ -27,6 +36,9 @@ public class ZeebeWorkers {
     @Autowired
     private ZeebeClient zeebeClient;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     @Value("${zeebe.client.evenly-allocated-max-jobs}")
     private int workerMaxJobs;
 
@@ -36,7 +48,12 @@ public class ZeebeWorkers {
                 .jobType("transaction-failure")
                 .handler((client, job) -> {
                     logger.info("Job '{}' started from process '{}' with key {}", job.getType(), job.getBpmnProcessId(), job.getKey());
+                    Map<String, Object> variables = job.getVariablesAsMap();
+                    String internalId = String.valueOf(job.getProcessInstanceKey());
+                    String transactionId = (String) variables.get(TRANSACTION_ID);
                     Exchange exchange = new DefaultExchange(camelContext);
+                    exchange.setProperty(CORRELATION_ID, transactionId);
+                    exchange.setProperty(INTERNAL_ID,internalId);
                    producerTemplate.send("direct:create-messages", exchange);
                     client.newCompleteCommand(job.getKey())
                             .send()
@@ -64,8 +81,20 @@ public class ZeebeWorkers {
                 .jobType("notification-service")
                 .handler((client, job) -> {
                     logger.info("Job '{}' started from process '{}' with key {}", job.getType(), job.getBpmnProcessId(), job.getKey());
+
+                    Map<String, Object> variables = job.getVariablesAsMap();
+                    TransactionChannelCollectionRequestDTO channelRequest = objectMapper.readValue(
+                            (String) variables.get("channelRequest"), TransactionChannelCollectionRequestDTO .class);
+
                     Exchange exchange = new DefaultExchange(camelContext);
+                    exchange.setProperty(MOBILE_NUMBER,channelRequest.getPayer()[0].getValue());
+                    exchange.setProperty(CORRELATION_ID, variables.get(TRANSACTION_ID));
+                    exchange.setProperty(INTERNAL_ID,variables.get(MESSAGE_INTERNAL_ID));
+                    exchange.setProperty(DELIVERY_MESSAGE,variables.get(MESSAGE_TO_SEND));
+
                     producerTemplate.send("direct:send-notifications", exchange);
+
+
                     client.newCompleteCommand(job.getKey())
                             .send()
                             .join()
@@ -79,7 +108,11 @@ public class ZeebeWorkers {
                 .jobType("get-notification-status")
                 .handler((client, job) -> {
                     logger.info("Job '{}' started from process '{}' with key {}", job.getType(), job.getBpmnProcessId(), job.getKey());
+                    Map<String, Object> variables = job.getVariablesAsMap();
+                    String transactionId = (String) variables.get(TRANSACTION_ID);
                     Exchange exchange = new DefaultExchange(camelContext);
+                    exchange.setProperty(INTERNAL_ID,variables.get(MESSAGE_INTERNAL_ID));
+                    exchange.setProperty(CORRELATION_ID, variables.get(TRANSACTION_ID));
                     producerTemplate.send("direct:delivery-notifications", exchange);
                    client.newCompleteCommand(job.getKey())
                            .send()
