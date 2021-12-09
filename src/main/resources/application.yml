@@ -1,5 +1,5 @@
 camel:
-  server-port: 5000
+  server-port: 6500
   springboot:
     main-run-controller: true
   dataformat:
@@ -22,8 +22,19 @@ provider:
     id: 3
   rapidpro:
     enabled: false
+    id: 4
+
+fineractconfig:
+  tenantid: "Fineract-Platform-TenantId"
+  tenantidvalue : "default"
+  tenantappkey: "Fineract-Tenant-App-Key"
+  tenantappvalue: "123456543234abdkdkdkd"
 
 hostconfig:
   host: 127.0.0.1
   protocol: http
   port: 9191
+
+velocity:
+  success: keyword
+  failure: message
