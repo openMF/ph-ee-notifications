@@ -1,5 +1,5 @@
 camel:
-  server-port: 6500
+  server-port: 5000
   springboot:
     main-run-controller: true
   dataformat:
@@ -19,10 +19,10 @@ zeebe:
 provider:
   telerivet:
     enabled: true
-    id: 3
+    id: 2
   rapidpro:
     enabled: false
-    id: 4
+    id: 3
 
 fineractconfig:
   tenantid: "Fineract-Platform-TenantId"

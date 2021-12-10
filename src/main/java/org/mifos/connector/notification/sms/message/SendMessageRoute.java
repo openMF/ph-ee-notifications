@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.mifos.connector.notification.camel.config.CamelProperties.*;
+import static org.mifos.connector.notification.zeebe.ZeebeVariables.CALLBACK_MESSAGE;
 
 @Component
 public class SendMessageRoute extends RouteBuilder {
@@ -92,19 +93,6 @@ public class SendMessageRoute extends RouteBuilder {
                     .setHeader(Exchange.CONTENT_TYPE, constant("application/json"))
                     .to(String.format("%s://%s:%d/sms/?bridgeEndpoint=true", protocol, address, port))
                     .log(LoggingLevel.INFO, "Sending sms to message gateway completed")
-                    .process(exchange ->{
-                        String id = exchange.getProperty(CORRELATION_ID, String.class);
-                        Map<String, Object> variables = new HashMap<>();
-                        variables.put(INTERNAL_ID,exchange.getProperty(INTERNAL_ID));
-                        logger.info("Publishing created messages to variables: " + variables);
-                        zeebeClient.newPublishMessageCommand()
-                                .messageName(DELIVERY_STATUS)
-                                .correlationKey(id)
-                                .timeToLive(Duration.ofMillis(timeToLive))
-                                .variables(variables)
-                                .send()
-                                .join();
-                    })
                    ;
 
         }
