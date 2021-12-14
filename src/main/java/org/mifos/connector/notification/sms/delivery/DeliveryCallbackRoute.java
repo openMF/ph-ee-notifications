@@ -5,10 +5,7 @@ import io.camunda.zeebe.client.ZeebeClient;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.model.dataformat.JsonLibrary;
-import org.apache.camel.util.json.JsonObject;
 import org.json.JSONArray;
-import org.mifos.connector.common.gsma.dto.AccountNameResponseDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +15,11 @@ import org.springframework.stereotype.Component;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.mifos.connector.notification.camel.config.CamelProperties.*;
+import static org.mifos.connector.notification.zeebe.ZeebeVariables.CALLBACK_MESSAGE;
+import static org.mifos.connector.notification.zeebe.ZeebeVariables.MESSAGE_DELIVERY_STATUS;
 
 @Component
 public class DeliveryCallbackRoute extends RouteBuilder{
@@ -57,7 +57,6 @@ public class DeliveryCallbackRoute extends RouteBuilder{
 
     @Override
     public void configure() throws Exception {
-        final int[] msg = new int[1];
             from("direct:delivery-notifications")
                     .id("delivery-notifications")
                     .log(LoggingLevel.INFO, "Calling delivery status API")
@@ -80,18 +79,25 @@ public class DeliveryCallbackRoute extends RouteBuilder{
                         String callback = exchange.getIn().getBody(String.class);
                         if(callback.contains("200")){
                             logger.info("Still Pending");
-                            variables.put(DELIVERY_STATUS,"false");
+                            exchange.setProperty(MESSAGE_DELIVERY_STATUS,false);
                         }
                        else{
                            logger.info("Passed");
-                            variables.put(DELIVERY_STATUS,"true");
+                            exchange.setProperty(MESSAGE_DELIVERY_STATUS,true);
+
                         }
-                        logger.info("Publishing created messages to variables: " + variables);
+                        Map<String, Object> newVariables = new HashMap<>();
+                        newVariables.put(MESSAGE_DELIVERY_STATUS, exchange.getProperty(MESSAGE_DELIVERY_STATUS));
+                        zeebeClient.newSetVariablesCommand(Long.parseLong(exchange.getProperty(INTERNAL_ID).toString()))
+                                .variables(newVariables)
+                                .send()
+                                .join();
+                        logger.info("Publishing created messages to variables: " + newVariables);
                         zeebeClient.newPublishMessageCommand()
-                                .messageName(DELIVERY_STATUS)
+                                .messageName(CALLBACK_MESSAGE)
                                 .correlationKey(id)
                                 .timeToLive(Duration.ofMillis(timeToLive))
-                                .variables(variables)
+                                .variables(newVariables)
                                 .send()
                                 .join();
                      })

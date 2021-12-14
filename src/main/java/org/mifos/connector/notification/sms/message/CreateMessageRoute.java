@@ -22,8 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.mifos.connector.notification.camel.config.CamelProperties.*;
-import static org.mifos.connector.notification.zeebe.ZeebeVariables.MESSAGE_INTERNAL_ID;
-import static org.mifos.connector.notification.zeebe.ZeebeVariables.MESSAGE_TO_SEND;
+import static org.mifos.connector.notification.zeebe.ZeebeVariables.*;
 
 
 @Component

@@ -9,7 +9,8 @@ public class ZeebeVariables {
     }
 
     public static final String TRANSACTION_ID = "transactionId";
-    public static final String DELIVERY_STATUS = "notification-request";
+    public static final String MESSAGE_DELIVERY_STATUS = "isMessageDelivered";
+    public static final String CALLBACK_MESSAGE = "notification-request";
     public static final String MESSAGE_TO_SEND = "deliveryMessage";
     public static final String MESSAGE_INTERNAL_ID = "internalId";
 }
