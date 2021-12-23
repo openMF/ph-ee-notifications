@@ -87,7 +87,7 @@ public class ZeebeWorkers {
                             (String) variables.get("channelRequest"), TransactionChannelCollectionRequestDTO .class);
 
                     Exchange exchange = new DefaultExchange(camelContext);
-                    exchange.setProperty(MOBILE_NUMBER,channelRequest.getPayer()[0].getValue());
+                    exchange.setProperty(MOBILE_NUMBER,variables.get(PHONE_NUMBER));
                     exchange.setProperty(CORRELATION_ID, variables.get(TRANSACTION_ID));
                     exchange.setProperty(INTERNAL_ID,variables.get(MESSAGE_INTERNAL_ID));
                     exchange.setProperty(DELIVERY_MESSAGE,variables.get(MESSAGE_TO_SEND));
