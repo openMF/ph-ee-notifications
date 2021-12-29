@@ -13,13 +13,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.mifos.connector.notification.camel.config.CamelProperties.*;
-import static org.mifos.connector.notification.zeebe.ZeebeVariables.CALLBACK_MESSAGE;
-import static org.mifos.connector.notification.zeebe.ZeebeVariables.MESSAGE_DELIVERY_STATUS;
+import static org.mifos.connector.notification.zeebe.ZeebeVariables.*;
 
 @Component
 public class DeliveryCallbackRoute extends RouteBuilder{
@@ -32,13 +32,13 @@ public class DeliveryCallbackRoute extends RouteBuilder{
     @Autowired
     private ZeebeClient zeebeClient;
 
-    @Value("${hostconfig.protocol}")
+    @Value("${messagegatewayconfig.protocol}")
     private String protocol;
 
-    @Value("${hostconfig.host}")
+    @Value("${messagegatewayconfig.host}")
     private String address;
 
-    @Value("${hostconfig.port}")
+    @Value("${messagegatewayconfig.port}")
     private int port;
 
     @Value("${fineractconfig.tenantid}")
@@ -59,6 +59,10 @@ public class DeliveryCallbackRoute extends RouteBuilder{
     public void configure() throws Exception {
             from("direct:delivery-notifications")
                     .id("delivery-notifications")
+                    .choice()
+                    .when(exchange -> {
+                        return Integer.parseInt(exchange.getProperty(INTERNAL_ID).toString()) < 3;
+                    })
                     .log(LoggingLevel.INFO, "Calling delivery status API")
                     .setHeader(tenantId, constant(tenantIdValue))
                     .setHeader(tenantAppKey, constant(tenantAppKeyValue))
@@ -101,8 +105,68 @@ public class DeliveryCallbackRoute extends RouteBuilder{
                                 .send()
                                 .join();
                      })
+                    .otherwise()
+                    .log("Callback Retry Over")
+                    .process(exchange -> {
+                        exchange.setProperty(MESSAGE_DELIVERY_STATUS,false);
+                        String id = exchange.getProperty(CORRELATION_ID, String.class);
+                        Map<String, Object> newVariables = new HashMap<>();
+                        newVariables.put(MESSAGE_DELIVERY_STATUS, exchange.getProperty(MESSAGE_DELIVERY_STATUS));
+                        zeebeClient.newSetVariablesCommand(Long.parseLong(exchange.getProperty(INTERNAL_ID).toString()))
+                                .variables(newVariables)
+                                .send()
+                                .join();
+                        logger.info("Publishing created messages to variables: " + newVariables);
+                        zeebeClient.newPublishMessageCommand()
+                                .messageName(CALLBACK_MESSAGE)
+                                .correlationKey(id)
+                                .timeToLive(Duration.ofMillis(timeToLive))
+                                .variables(newVariables)
+                                .send()
+                                .join();
+                    });
 
-            ;
+
+
+        from("rest:POST:/sms/callback/")
+                .id("delivery-callback")
+                .log(LoggingLevel.INFO, "Waiting for delivery status callback")
+                .choice()
+                .when(exchange -> {
+                    String callback = exchange.getIn().getBody(String.class);
+                   return callback.contains((CharSequence) exchange.getProperty((INTERNAL_ID)));
+                })
+                .log("Message callback recieved. Continuing.")
+                .process(exchange -> {
+                    String id = exchange.getProperty(CORRELATION_ID, String.class);
+                    logger.info("Delivery Status Endpoint Received");
+                    String callback = exchange.getIn().getBody(String.class);
+                    if(callback.contains("200")){
+                        logger.info("Message Status Still Pending");
+                        exchange.setProperty(MESSAGE_DELIVERY_STATUS,false);
+                    }
+                    else{
+                        logger.info("Message Delivered");
+                        exchange.setProperty(MESSAGE_DELIVERY_STATUS,true);
+
+                    }
+                    Map<String, Object> newVariables = new HashMap<>();
+                    newVariables.put(MESSAGE_DELIVERY_STATUS, exchange.getProperty(MESSAGE_DELIVERY_STATUS));
+                    zeebeClient.newSetVariablesCommand(Long.parseLong(exchange.getProperty(INTERNAL_ID).toString()))
+                            .variables(newVariables)
+                            .send()
+                            .join();
+                    logger.info("Publishing created messages to variables: " + newVariables);
+                    zeebeClient.newPublishMessageCommand()
+                            .messageName(CALLBACK_MESSAGE)
+                            .correlationKey(id)
+                            .timeToLive(Duration.ofMillis(timeToLive))
+                            .variables(newVariables)
+                            .send()
+                            .join();
+                })
+                .otherwise()
+                .log("Received callback did not correspond to sent message, Waiting");
 
 
         }

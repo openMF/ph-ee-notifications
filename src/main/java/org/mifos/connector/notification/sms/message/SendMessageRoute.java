@@ -43,13 +43,13 @@ public class SendMessageRoute extends RouteBuilder {
     @Value("${zeebe.client.ttl}")
     private int timeToLive;
 
-    @Value("${hostconfig.protocol}")
+    @Value("${messagegatewayconfig.protocol}")
     private String protocol;
 
-    @Value("${hostconfig.host}")
+    @Value("${messagegatewayconfig.host}")
     private String address;
 
-    @Value("${hostconfig.port}")
+    @Value("${messagegatewayconfig.port}")
     private int port;
 
     @Value("${fineractconfig.tenantid}")

@@ -109,6 +109,7 @@ public class ZeebeWorkers {
                 .handler((client, job) -> {
                     logger.info("Job '{}' started from process '{}' with key {}", job.getType(), job.getBpmnProcessId(), job.getKey());
                     Map<String, Object> variables = job.getVariablesAsMap();
+                    variables.put(CALLBACK_RETRY_COUNT, 1 + (Integer) variables.getOrDefault(CALLBACK_RETRY_COUNT, 0));
                     String transactionId = (String) variables.get(TRANSACTION_ID);
                     Exchange exchange = new DefaultExchange(camelContext);
                     exchange.setProperty(INTERNAL_ID,variables.get(MESSAGE_INTERNAL_ID));
