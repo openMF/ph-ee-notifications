@@ -14,4 +14,5 @@ public class ZeebeVariables {
     public static final String MESSAGE_TO_SEND = "deliveryMessage";
     public static final String MESSAGE_INTERNAL_ID = "internalId";
     public static final String PHONE_NUMBER = "phoneNumber";
+    public static final int CALLBACK_RETRY_COUNT = 0;
 }

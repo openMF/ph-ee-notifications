@@ -30,7 +30,7 @@ fineractconfig:
   tenantappkey: "Fineract-Tenant-App-Key"
   tenantappvalue: "123456543234abdkdkdkd"
 
-hostconfig:
+messagegatewayconfig:
   host: 127.0.0.1
   protocol: http
   port: 9191
