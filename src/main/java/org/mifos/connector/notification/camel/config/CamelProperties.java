@@ -17,5 +17,8 @@ public class CamelProperties {
     public static final int PROVIDER_ID = 1;
     public static  String DELIVERY_STATUS = "deliveryStatus";
     public static String DELIVERY_MESSAGE = "deliveryMessage";
+    public static final String DATE = "originDate";
+    public static final String ACCOUNT_ID = "accountId";
+    public static final String TRANSACTION_AMOUNT = "amount";
 
 }

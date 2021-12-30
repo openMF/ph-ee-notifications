@@ -1,1 +1,2 @@
-The transaction with transaction id $message has failed.
+The transaction for account number:$account for amount:$amount has failed on $date with following transaction
+id: $transactionid

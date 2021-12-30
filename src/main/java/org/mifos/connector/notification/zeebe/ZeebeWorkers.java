@@ -8,6 +8,7 @@ import org.apache.camel.Exchange;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.support.DefaultExchange;
 import org.mifos.connector.common.channel.dto.TransactionChannelCollectionRequestDTO;
+import org.mifos.connector.notification.sms.dto.MessageCreationDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,9 @@ public class ZeebeWorkers {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private MessageCreationDto messageCreationDto;
+
     @Value("${zeebe.client.evenly-allocated-max-jobs}")
     private int workerMaxJobs;
 
@@ -49,12 +53,10 @@ public class ZeebeWorkers {
                 .handler((client, job) -> {
                     logger.info("Job '{}' started from process '{}' with key {}", job.getType(), job.getBpmnProcessId(), job.getKey());
                     Map<String, Object> variables = job.getVariablesAsMap();
+                    Exchange exchange = messageCreationDto.setPropertiesForMessage(variables);
                     String internalId = String.valueOf(job.getProcessInstanceKey());
-                    String transactionId = (String) variables.get(TRANSACTION_ID);
-                    Exchange exchange = new DefaultExchange(camelContext);
-                    exchange.setProperty(CORRELATION_ID, transactionId);
                     exchange.setProperty(INTERNAL_ID,internalId);
-                   producerTemplate.send("direct:create-messages", exchange);
+                    producerTemplate.send("direct:create-failure-messages", exchange);
                     client.newCompleteCommand(job.getKey())
                             .send()
                             .join()
@@ -65,17 +67,22 @@ public class ZeebeWorkers {
                 .open();
 
 
-//        zeebeClient.newWorker()
-//                .jobType("transaction-success")
-//                .handler((client, job) -> {
-//                    logger.info("Job '{}' started from process '{}' with key {}", job.getType(), job.getBpmnProcessId(), job.getKey());
-//                    client.newCompleteCommand(job.getKey())
-//                            .send()
-//                    ;
-//                })
-//                .name("transaction-success")
-//                .maxJobsActive(workerMaxJobs)
-//                .open();
+        zeebeClient.newWorker()
+                .jobType("transaction-success")
+                .handler((client, job) -> {
+                    logger.info("Job '{}' started from process '{}' with key {}", job.getType(), job.getBpmnProcessId(), job.getKey());
+                    Map<String, Object> variables = job.getVariablesAsMap();
+                    Exchange exchange = messageCreationDto.setPropertiesForMessage(variables);
+                    String internalId = String.valueOf(job.getProcessInstanceKey());
+                    exchange.setProperty(INTERNAL_ID,internalId);
+                    producerTemplate.send("direct:create-success-messages", exchange);
+                    client.newCompleteCommand(job.getKey())
+                            .send()
+                    ;
+                })
+                .name("transaction-success")
+                .maxJobsActive(workerMaxJobs)
+                .open();
 
         zeebeClient.newWorker()
                 .jobType("notification-service")
