@@ -1,1 +1,1 @@
-This message is for showing success of a transaction with $keyword.
+The transaction for amount: $amount from account: $account was successful on date: $date

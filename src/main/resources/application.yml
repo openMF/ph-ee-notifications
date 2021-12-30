@@ -36,5 +36,7 @@ messagegatewayconfig:
   port: 9191
 
 velocity:
-  success: keyword
-  failure: message
+  transactionid: transactionid
+  amount: amount
+  date: date
+  account: account
