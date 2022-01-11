@@ -66,11 +66,12 @@ public class CreateMessageRoute extends RouteBuilder {
                     .log(LoggingLevel.INFO, "Creating message")
                     .process(exchange ->{
                         StringWriter message = new StringWriter();
-                        account= account.replaceAll("\\d(?=(?:\\D*\\d){4})", "*");
+                        String accountId = exchange.getProperty(ACCOUNT_ID).toString();
+                        accountId= accountId.replaceAll("\\d(?=(?:\\D*\\d){4})", "*");
                         templateConfig.getVelocityContext().put(transactionId,exchange.getProperty(CORRELATION_ID));
                         templateConfig.getVelocityContext().put(amount,exchange.getProperty(TRANSACTION_AMOUNT));
                         templateConfig.getVelocityContext().put(date,exchange.getProperty(DATE));
-                        templateConfig.getVelocityContext().put(account,exchange.getProperty(ACCOUNT_ID));
+                        templateConfig.getVelocityContext().put(account,accountId);
                         templateConfig.getFailureTemplate().merge(templateConfig.getVelocityContext(),message);
                         exchange.setProperty(DELIVERY_MESSAGE, message);
                         Map<String, Object> newVariables = new HashMap<>();
@@ -91,10 +92,11 @@ public class CreateMessageRoute extends RouteBuilder {
                 .log(LoggingLevel.INFO, "Drafting success message")
                 .process(exchange ->{
                     StringWriter message = new StringWriter();
-                    account= account.replaceAll("\\d(?=(?:\\D*\\d){4})", "*");
+                    String accountId = exchange.getProperty(ACCOUNT_ID).toString();
+                    accountId= accountId.replaceAll("\\d(?=(?:\\D*\\d){4})", "*");
                     templateConfig.getVelocityContext().put(amount,exchange.getProperty(TRANSACTION_AMOUNT));
                     templateConfig.getVelocityContext().put(date,exchange.getProperty(DATE));
-                    templateConfig.getVelocityContext().put(account,exchange.getProperty(ACCOUNT_ID));
+                    templateConfig.getVelocityContext().put(account,accountId);
                     templateConfig.getSuccessTemplate().merge(templateConfig.getVelocityContext(),message);
                     exchange.setProperty(DELIVERY_MESSAGE, message);
                     Map<String, Object> newVariables = new HashMap<>();
