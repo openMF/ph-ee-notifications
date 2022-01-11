@@ -24,7 +24,7 @@ provider:
     enabled: false
     id: 3
 
-fineractconfig:
+operationsconfig:
   tenantid: "Fineract-Platform-TenantId"
   tenantidvalue : "default"
   tenantappkey: "Fineract-Tenant-App-Key"

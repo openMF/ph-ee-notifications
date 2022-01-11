@@ -52,16 +52,16 @@ public class SendMessageRoute extends RouteBuilder {
     @Value("${messagegatewayconfig.port}")
     private int port;
 
-    @Value("${fineractconfig.tenantid}")
+    @Value("${operationsconfig.tenantid}")
     private String tenantId;
 
-    @Value("${fineractconfig.tenantidvalue}")
+    @Value("${operationsconfig.tenantidvalue}")
     private String tenantIdValue;
 
-    @Value("${fineractconfig.tenantappkey}")
+    @Value("${operationsconfig.tenantappkey}")
     private String tenantAppKey;
 
-    @Value("${fineractconfig.tenantappvalue}")
+    @Value("${operationsconfig.tenantappvalue}")
     private String tenantAppKeyValue;
 
 
