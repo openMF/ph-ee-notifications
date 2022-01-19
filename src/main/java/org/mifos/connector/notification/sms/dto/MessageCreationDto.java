@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 
 import static org.mifos.connector.notification.camel.config.CamelProperties.*;
@@ -26,12 +27,14 @@ public class MessageCreationDto {
     public Exchange setPropertiesForMessage(Map<String, Object> variables){
         String transactionId = (String) variables.get(TRANSACTION_ID);
         String account = (String) variables.get(ACCOUNT);
-        String originDate = (String) variables.get(ORIGIN_DATE);
-        originDate = df.format(originDate);
+        Long originDate = Long.valueOf((String) variables.get(ORIGIN_DATE));
+        Date date=new Date(originDate);
+        SimpleDateFormat df2 = new SimpleDateFormat("dd/MM/yy");
+        String dateText = df2.format(date);
         String amount = (String) variables.get(AMOUNT);
         Exchange exchange = new DefaultExchange(camelContext);
         exchange.setProperty(CORRELATION_ID, transactionId);
-        exchange.setProperty(DATE, originDate);
+        exchange.setProperty(DATE, dateText);
         exchange.setProperty(ACCOUNT_ID,account);
         exchange.setProperty(TRANSACTION_AMOUNT,amount);
         return exchange;

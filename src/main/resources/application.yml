@@ -40,3 +40,7 @@ velocity:
   amount: amount
   date: date
   account: account
+
+notifications:
+  local:
+    host: 0.0.0.0:5000
