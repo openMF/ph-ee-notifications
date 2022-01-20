@@ -28,13 +28,10 @@ public class MessageCreationDto {
         String transactionId = (String) variables.get(TRANSACTION_ID);
         String account = (String) variables.get(ACCOUNT);
         Long originDate = (Long) variables.get(ORIGIN_DATE);
-        Date date=new Date(originDate);
-        SimpleDateFormat df2 = new SimpleDateFormat("dd/MM/yy");
-        String dateText = df2.format(date);
         String amount = (String) variables.get(AMOUNT);
         Exchange exchange = new DefaultExchange(camelContext);
         exchange.setProperty(CORRELATION_ID, transactionId);
-        exchange.setProperty(DATE, dateText);
+        exchange.setProperty(DATE, originDate);
         exchange.setProperty(ACCOUNT_ID,account);
         exchange.setProperty(TRANSACTION_AMOUNT,amount);
         return exchange;
