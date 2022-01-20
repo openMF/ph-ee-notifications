@@ -27,7 +27,7 @@ public class MessageCreationDto {
     public Exchange setPropertiesForMessage(Map<String, Object> variables){
         String transactionId = (String) variables.get(TRANSACTION_ID);
         String account = (String) variables.get(ACCOUNT);
-        Long originDate = Long.valueOf((String) variables.get(ORIGIN_DATE));
+        Long originDate = (Long) variables.get(ORIGIN_DATE);
         Date date=new Date(originDate);
         SimpleDateFormat df2 = new SimpleDateFormat("dd/MM/yy");
         String dateText = df2.format(date);
