@@ -91,7 +91,7 @@ public class SendMessageRoute extends RouteBuilder {
                     .log("${body}")
                     .setHeader(Exchange.HTTP_METHOD, simple("POST"))
                     .setHeader(Exchange.CONTENT_TYPE, constant("application/json"))
-                    .to(String.format("%s://%s:%d/sms/?bridgeEndpoint=true", protocol, address, port))
+                    .to(String.format("%s://%s/sms/?bridgeEndpoint=true", protocol, address))
                     .log(LoggingLevel.INFO, "Sending sms to message gateway completed")
                    ;
 

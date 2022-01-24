@@ -75,7 +75,7 @@ public class DeliveryCallbackRoute extends RouteBuilder{
                     .log("${body}")
                     .setHeader(Exchange.HTTP_METHOD, simple("POST"))
                     .setHeader(Exchange.CONTENT_TYPE, constant("application/json"))
-                    .to(String.format("%s://%s:%d/sms/report/?bridgeEndpoint=true", protocol, address, port))
+                    .to(String.format("%s://%s/sms/report/?bridgeEndpoint=true", protocol, address))
                     .log(LoggingLevel.INFO, "Delivery Status Endpoint Received")
                     .process(exchange -> {
                         String id = exchange.getProperty(CORRELATION_ID, String.class);

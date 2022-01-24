@@ -16,6 +16,11 @@ zeebe:
   broker:
     contactpoint: "localhost:26500"
 
+# endpoint configuration
+endpoints:
+  shutdown:
+    enabled: true
+
 provider:
   telerivet:
     enabled: true
@@ -44,3 +49,13 @@ velocity:
 notifications:
   local:
     host: 0.0.0.0:5000
+
+management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      liveness:
+        enabled: true
+      readiness:
+        enabled: true
