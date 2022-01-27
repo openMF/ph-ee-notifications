@@ -6,6 +6,7 @@ build/
 !**/src/test/**/build/
 ../ph-ee-connector-gsma/src/main/java/org/mifos/connector/target/
 
+
 ### STS ###
 .apt_generated
 .classpath
