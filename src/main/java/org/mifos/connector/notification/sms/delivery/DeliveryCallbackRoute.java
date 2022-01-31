@@ -60,9 +60,7 @@ public class DeliveryCallbackRoute extends RouteBuilder{
             from("direct:delivery-notifications")
                     .id("delivery-notifications")
                     .choice()
-                    .when(exchange -> {
-                        return Integer.parseInt(exchange.getProperty(CALLBACK_RETRY_COUNT).toString()) < 3;
-                    })
+                    .when(exchange -> Integer.parseInt(exchange.getProperty(RETRY_COUNT_CALLBACK).toString()) < 3)
                     .log(LoggingLevel.INFO, "Calling delivery status API")
                     .setHeader(tenantId, constant(tenantIdValue))
                     .setHeader(tenantAppKey, constant(tenantAppKeyValue))

@@ -121,6 +121,7 @@ public class ZeebeWorkers {
                     Exchange exchange = new DefaultExchange(camelContext);
                     exchange.setProperty(INTERNAL_ID,variables.get(MESSAGE_INTERNAL_ID));
                     exchange.setProperty(CORRELATION_ID, variables.get(TRANSACTION_ID));
+                    exchange.setProperty(RETRY_COUNT_CALLBACK, variables.get(CALLBACK_RETRY_COUNT));
                     producerTemplate.send("direct:delivery-notifications", exchange);
                    client.newCompleteCommand(job.getKey())
                            .send()

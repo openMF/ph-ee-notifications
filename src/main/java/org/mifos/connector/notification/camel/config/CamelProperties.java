@@ -20,5 +20,6 @@ public class CamelProperties {
     public static final String DATE = "originDate";
     public static final String ACCOUNT_ID = "accountId";
     public static final String TRANSACTION_AMOUNT = "amount";
+    public static final String RETRY_COUNT_CALLBACK = "callbackRetry";
 
 }
