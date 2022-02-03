@@ -77,19 +77,18 @@ public class DeliveryCallbackRoute extends RouteBuilder{
                     .log(LoggingLevel.INFO, "Delivery Status Endpoint Received")
                     .process(exchange -> {
                         String id = exchange.getProperty(CORRELATION_ID, String.class);
-                        Map<String, Object> variables = new HashMap<>();
                         String callback = exchange.getIn().getBody(String.class);
-                        if(callback.contains("200")){
-                            logger.info("Still Pending");
-                            exchange.setProperty(MESSAGE_DELIVERY_STATUS,false);
-                        }
-                       else{
-                           logger.info("Passed");
+                        if(callback.contains("300")){
+                            logger.info("Passed");
                             exchange.setProperty(MESSAGE_DELIVERY_STATUS,true);
 
                         }
+                       else{
+                            logger.info("Still Pending");
+                        }
                         Map<String, Object> newVariables = new HashMap<>();
                         newVariables.put(MESSAGE_DELIVERY_STATUS, exchange.getProperty(MESSAGE_DELIVERY_STATUS));
+                        newVariables.put(CALLBACK_RETRY_COUNT,exchange.getProperty(RETRY_COUNT_CALLBACK));
                         zeebeClient.newSetVariablesCommand(Long.parseLong(exchange.getProperty(INTERNAL_ID).toString()))
                                 .variables(newVariables)
                                 .send()
@@ -110,6 +109,7 @@ public class DeliveryCallbackRoute extends RouteBuilder{
                         String id = exchange.getProperty(CORRELATION_ID, String.class);
                         Map<String, Object> newVariables = new HashMap<>();
                         newVariables.put(MESSAGE_DELIVERY_STATUS, exchange.getProperty(MESSAGE_DELIVERY_STATUS));
+                        newVariables.put(CALLBACK_RETRY_COUNT,exchange.getProperty(RETRY_COUNT_CALLBACK));
                         zeebeClient.newSetVariablesCommand(Long.parseLong(exchange.getProperty(INTERNAL_ID).toString()))
                                 .variables(newVariables)
                                 .send()
