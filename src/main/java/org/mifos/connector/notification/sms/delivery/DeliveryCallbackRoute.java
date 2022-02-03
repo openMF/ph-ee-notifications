@@ -87,20 +87,27 @@ public class DeliveryCallbackRoute extends RouteBuilder{
                             logger.info("Still Pending");
                         }
                         Map<String, Object> newVariables = new HashMap<>();
-                        newVariables.put(MESSAGE_DELIVERY_STATUS, exchange.getProperty(MESSAGE_DELIVERY_STATUS));
-                        newVariables.put(CALLBACK_RETRY_COUNT,exchange.getProperty(RETRY_COUNT_CALLBACK));
-                        zeebeClient.newSetVariablesCommand(Long.parseLong(exchange.getProperty(INTERNAL_ID).toString()))
-                                .variables(newVariables)
-                                .send()
-                                .join();
-                        logger.info("Publishing created messages to variables: " + newVariables);
-                        zeebeClient.newPublishMessageCommand()
-                                .messageName(CALLBACK_MESSAGE)
-                                .correlationKey(id)
-                                .timeToLive(Duration.ofMillis(timeToLive))
-                                .variables(newVariables)
-                                .send()
-                                .join();
+                       if(exchange.getProperty(MESSAGE_DELIVERY_STATUS).toString().equals(true)){
+                           logger.info("Publishing variables: " + newVariables);
+                           newVariables.put(MESSAGE_DELIVERY_STATUS, exchange.getProperty(MESSAGE_DELIVERY_STATUS));
+                           zeebeClient.newPublishMessageCommand()
+                                   .messageName(CALLBACK_MESSAGE)
+                                   .correlationKey(id)
+                                   .variables(newVariables)
+                                   .timeToLive(Duration.ofMillis(timeToLive))
+                                   .send()
+                                   .join();
+                       }
+                       else{
+                           logger.info("Publishing created variables to variables: " + newVariables);
+                           newVariables.put(CALLBACK_RETRY_COUNT,exchange.getProperty(RETRY_COUNT_CALLBACK));
+                           zeebeClient.newSetVariablesCommand(Long.parseLong(exchange.getProperty(INTERNAL_ID).toString()))
+                                   .variables(newVariables)
+                                   .send()
+                                   .join();
+                       }
+
+
                      })
                     .otherwise()
                     .log("Callback Retry Over")
@@ -137,31 +144,35 @@ public class DeliveryCallbackRoute extends RouteBuilder{
                 .log("Message callback recieved. Continuing.")
                 .process(exchange -> {
                     String id = exchange.getProperty(CORRELATION_ID, String.class);
-                    logger.info("Delivery Status Endpoint Received");
                     String callback = exchange.getIn().getBody(String.class);
-                    if(callback.contains("200")){
-                        logger.info("Message Status Still Pending");
-                        exchange.setProperty(MESSAGE_DELIVERY_STATUS,false);
-                    }
-                    else{
-                        logger.info("Message Delivered");
+                    if(callback.contains("300")){
+                        logger.info("Passed");
                         exchange.setProperty(MESSAGE_DELIVERY_STATUS,true);
 
                     }
+                    else{
+                        logger.info("Still Pending");
+                    }
                     Map<String, Object> newVariables = new HashMap<>();
-                    newVariables.put(MESSAGE_DELIVERY_STATUS, exchange.getProperty(MESSAGE_DELIVERY_STATUS));
-                    zeebeClient.newSetVariablesCommand(Long.parseLong(exchange.getProperty(INTERNAL_ID).toString()))
-                            .variables(newVariables)
-                            .send()
-                            .join();
-                    logger.info("Publishing created messages to variables: " + newVariables);
-                    zeebeClient.newPublishMessageCommand()
-                            .messageName(CALLBACK_MESSAGE)
-                            .correlationKey(id)
-                            .timeToLive(Duration.ofMillis(timeToLive))
-                            .variables(newVariables)
-                            .send()
-                            .join();
+                    if(exchange.getProperty(MESSAGE_DELIVERY_STATUS).toString().equals(true)){
+                        logger.info("Publishing variables: " + newVariables);
+                        newVariables.put(MESSAGE_DELIVERY_STATUS, exchange.getProperty(MESSAGE_DELIVERY_STATUS));
+                        zeebeClient.newPublishMessageCommand()
+                                .messageName(CALLBACK_MESSAGE)
+                                .correlationKey(id)
+                                .variables(newVariables)
+                                .timeToLive(Duration.ofMillis(timeToLive))
+                                .send()
+                                .join();
+                    }
+                    else{
+                        logger.info("Publishing created variables to variables: " + newVariables);
+                        newVariables.put(CALLBACK_RETRY_COUNT,exchange.getProperty(RETRY_COUNT_CALLBACK));
+                        zeebeClient.newSetVariablesCommand(Long.parseLong(exchange.getProperty(INTERNAL_ID).toString()))
+                                .variables(newVariables)
+                                .send()
+                                .join();
+                    }
                 })
                 .otherwise()
                 .log("Received callback did not correspond to sent message, Waiting");
