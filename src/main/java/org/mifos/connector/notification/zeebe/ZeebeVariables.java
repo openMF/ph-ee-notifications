@@ -18,4 +18,5 @@ public class ZeebeVariables {
     public static final String ORIGIN_DATE = "originDate";
     public static final String ACCOUNT = "accountId";
     public static final String AMOUNT = "amount";
+    public static final String DELIVERY_ERROR_MESSAGE = "deliveryErrorMessage";
 }

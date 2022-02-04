@@ -10,7 +10,7 @@ public class CamelProperties {
     public static final String CORRELATION_ID = "correlationId";
     public static final String TRANSACTION_BODY = "transactionBody";
     public static final String TRANSACTION_TYPE = "transactionType";
-    public static final String ERROR_INFORMATION = "errorInformation";
+    public static final String DELIVERY_ERROR_INFORMATION = "deliveryErrorInformation";
     public static final String TRANSACTION_ID = "transactionId";
     public static final String INTERNAL_ID = "internalId";
     public static final String MOBILE_NUMBER = "mobileNumber";

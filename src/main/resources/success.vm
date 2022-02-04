@@ -1,1 +1,1 @@
-The transaction for amount: $amount from account: $account was successful on date: $date
+Hello $account Last payment: KSh $amount. Receipt Number paymenthub:$transactionid. was successful on $date

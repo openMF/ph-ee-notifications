@@ -6,6 +6,7 @@ import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
 import org.json.JSONArray;
+import org.mifos.connector.notification.sms.dto.MessageResponseDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,10 +14,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static org.mifos.connector.notification.camel.config.CamelProperties.*;
 import static org.mifos.connector.notification.zeebe.ZeebeVariables.*;
@@ -77,18 +76,38 @@ public class DeliveryCallbackRoute extends RouteBuilder{
                     .log(LoggingLevel.INFO, "Delivery Status Endpoint Received")
                     .process(exchange -> {
                         String id = exchange.getProperty(CORRELATION_ID, String.class);
-                        String callback = exchange.getIn().getBody(String.class);
-                        if(callback.contains("300")){
+                        JSONArray jArray= new JSONArray (exchange.getIn().getBody(String.class));
+                        int deliveryStatus = jArray.getJSONObject(0).getInt("deliveryStatus");
+                        if(deliveryStatus == 300){
                             logger.info("Passed");
                             exchange.setProperty(MESSAGE_DELIVERY_STATUS,true);
-
                         }
-                       else{
-                            logger.info("Still Pending");
+                        else {
+                            boolean hasError = jArray.getJSONObject(0).getBoolean("hasError");
+                            String errorMessage = jArray.getJSONObject(0).getString("errorMessage");
+                            if (!errorMessage.isEmpty()) {
+                                logger.info("Error encountered: "+ errorMessage );
+                                exchange.setProperty(DELIVERY_ERROR_INFORMATION,errorMessage);
+                                exchange.setProperty(MESSAGE_DELIVERY_STATUS,false);
+                            } else if(!hasError) {
+                                logger.info("Still Pending, will retry");
+                            }
                         }
                         Map<String, Object> newVariables = new HashMap<>();
-                       if(exchange.getProperty(MESSAGE_DELIVERY_STATUS).toString().equals(true)){
+                       if(exchange.getProperty(MESSAGE_DELIVERY_STATUS).equals(true)){
                            logger.info("Publishing variables: " + newVariables);
+                           newVariables.put(MESSAGE_DELIVERY_STATUS, exchange.getProperty(MESSAGE_DELIVERY_STATUS));
+                           zeebeClient.newPublishMessageCommand()
+                                   .messageName(CALLBACK_MESSAGE)
+                                   .correlationKey(id)
+                                   .variables(newVariables)
+                                   .timeToLive(Duration.ofMillis(timeToLive))
+                                   .send()
+                                   .join();
+                       }
+                       else if(exchange.getProperty(MESSAGE_DELIVERY_STATUS).equals(false)){
+                           logger.info("Publishing variables: " + newVariables);
+                           newVariables.put(DELIVERY_ERROR_MESSAGE, exchange.getProperty(DELIVERY_ERROR_INFORMATION));
                            newVariables.put(MESSAGE_DELIVERY_STATUS, exchange.getProperty(MESSAGE_DELIVERY_STATUS));
                            zeebeClient.newPublishMessageCommand()
                                    .messageName(CALLBACK_MESSAGE)
@@ -144,18 +163,38 @@ public class DeliveryCallbackRoute extends RouteBuilder{
                 .log("Message callback recieved. Continuing.")
                 .process(exchange -> {
                     String id = exchange.getProperty(CORRELATION_ID, String.class);
-                    String callback = exchange.getIn().getBody(String.class);
-                    if(callback.contains("300")){
+                    JSONArray jArray= new JSONArray (exchange.getIn().getBody(String.class));
+                    int deliveryStatus = jArray.getJSONObject(0).getInt("deliveryStatus");
+                    if(deliveryStatus == 300){
                         logger.info("Passed");
                         exchange.setProperty(MESSAGE_DELIVERY_STATUS,true);
-
                     }
-                    else{
-                        logger.info("Still Pending");
+                    else {
+                        boolean hasError = jArray.getJSONObject(0).getBoolean("hasError");
+                        String errorMessage = jArray.getJSONObject(0).getString("errorMessage");
+                        if (!errorMessage.isEmpty()) {
+                            logger.info("Error encountered: "+ errorMessage );
+                            exchange.setProperty(DELIVERY_ERROR_INFORMATION,errorMessage);
+                            exchange.setProperty(MESSAGE_DELIVERY_STATUS,false);
+                        } else if(!hasError) {
+                            logger.info("Still Pending, will retry");
+                        }
                     }
                     Map<String, Object> newVariables = new HashMap<>();
-                    if(exchange.getProperty(MESSAGE_DELIVERY_STATUS).toString().equals(true)){
+                    if(exchange.getProperty(MESSAGE_DELIVERY_STATUS).equals(true)){
                         logger.info("Publishing variables: " + newVariables);
+                        newVariables.put(MESSAGE_DELIVERY_STATUS, exchange.getProperty(MESSAGE_DELIVERY_STATUS));
+                        zeebeClient.newPublishMessageCommand()
+                                .messageName(CALLBACK_MESSAGE)
+                                .correlationKey(id)
+                                .variables(newVariables)
+                                .timeToLive(Duration.ofMillis(timeToLive))
+                                .send()
+                                .join();
+                    }
+                    else if(exchange.getProperty(MESSAGE_DELIVERY_STATUS).equals(false)){
+                        logger.info("Publishing variables: " + newVariables);
+                        newVariables.put(DELIVERY_ERROR_MESSAGE, exchange.getProperty(DELIVERY_ERROR_INFORMATION));
                         newVariables.put(MESSAGE_DELIVERY_STATUS, exchange.getProperty(MESSAGE_DELIVERY_STATUS));
                         zeebeClient.newPublishMessageCommand()
                                 .messageName(CALLBACK_MESSAGE)
