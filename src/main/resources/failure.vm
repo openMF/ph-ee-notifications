@@ -1,2 +1,1 @@
-The transaction for account number:$account for amount:$amount has failed on $date with following transaction
-id: $transactionid
+Hello $account Last payment: KSh $amount. Receipt Number paymenthub:$transactionid failed on $date
