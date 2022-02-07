@@ -84,13 +84,14 @@ public class DeliveryCallbackRoute extends RouteBuilder{
                         }
                         else {
                             boolean hasError = jArray.getJSONObject(0).getBoolean("hasError");
-                            String errorMessage = jArray.getJSONObject(0).getString("errorMessage");
-                            if (!errorMessage.isEmpty()) {
-                                logger.info("Error encountered: "+ errorMessage );
-                                exchange.setProperty(DELIVERY_ERROR_INFORMATION,errorMessage);
-                                exchange.setProperty(MESSAGE_DELIVERY_STATUS,false);
-                            } else if(!hasError) {
-                                logger.info("Still Pending, will retry");
+                            if(!hasError) {
+                                if (jArray.getJSONObject(0).get("errorMessage") == null) {
+                                    logger.info("Still Pending, will retry");
+                                } else {
+                                    logger.info("Error encountered: " + jArray.getJSONObject(0).getString("errorMessage"));
+                                    exchange.setProperty(DELIVERY_ERROR_INFORMATION, jArray.getJSONObject(0).getString("errorMessage"));
+                                    exchange.setProperty(MESSAGE_DELIVERY_STATUS, false);
+                                }
                             }
                         }
                         Map<String, Object> newVariables = new HashMap<>();
@@ -171,13 +172,14 @@ public class DeliveryCallbackRoute extends RouteBuilder{
                     }
                     else {
                         boolean hasError = jArray.getJSONObject(0).getBoolean("hasError");
-                        String errorMessage = jArray.getJSONObject(0).getString("errorMessage");
-                        if (!errorMessage.isEmpty()) {
-                            logger.info("Error encountered: "+ errorMessage );
-                            exchange.setProperty(DELIVERY_ERROR_INFORMATION,errorMessage);
-                            exchange.setProperty(MESSAGE_DELIVERY_STATUS,false);
-                        } else if(!hasError) {
-                            logger.info("Still Pending, will retry");
+                        if(!hasError) {
+                            if (jArray.getJSONObject(0).get("errorMessage") == null) {
+                                logger.info("Still Pending, will retry");
+                            } else {
+                                logger.info("Error encountered: " + jArray.getJSONObject(0).getString("errorMessage"));
+                                exchange.setProperty(DELIVERY_ERROR_INFORMATION, jArray.getJSONObject(0).getString("errorMessage"));
+                                exchange.setProperty(MESSAGE_DELIVERY_STATUS, false);
+                            }
                         }
                     }
                     Map<String, Object> newVariables = new HashMap<>();
