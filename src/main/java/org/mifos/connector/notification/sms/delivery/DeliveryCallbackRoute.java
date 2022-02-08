@@ -77,6 +77,7 @@ public class DeliveryCallbackRoute extends RouteBuilder{
                     .process(exchange -> {
                         String id = exchange.getProperty(CORRELATION_ID, String.class);
                         JSONArray jArray= new JSONArray (exchange.getIn().getBody(String.class));
+
                         int deliveryStatus = jArray.getJSONObject(0).getInt("deliveryStatus");
                         if(deliveryStatus == 300){
                             logger.info("Passed");
@@ -85,12 +86,13 @@ public class DeliveryCallbackRoute extends RouteBuilder{
                         else {
                             boolean hasError = jArray.getJSONObject(0).getBoolean("hasError");
                             if(!hasError) {
-                                if (jArray.getJSONObject(0).get("errorMessage") == null) {
-                                    logger.info("Still Pending, will retry");
-                                } else {
+                                if (jArray.toString().contains("errorMessage")) {
                                     logger.info("Error encountered: " + jArray.getJSONObject(0).getString("errorMessage"));
                                     exchange.setProperty(DELIVERY_ERROR_INFORMATION, jArray.getJSONObject(0).getString("errorMessage"));
                                     exchange.setProperty(MESSAGE_DELIVERY_STATUS, false);
+
+                                } else {
+                                    logger.info("Still Pending, will retry");
                                 }
                             }
                         }
@@ -173,12 +175,13 @@ public class DeliveryCallbackRoute extends RouteBuilder{
                     else {
                         boolean hasError = jArray.getJSONObject(0).getBoolean("hasError");
                         if(!hasError) {
-                            if (jArray.getJSONObject(0).get("errorMessage") == null) {
-                                logger.info("Still Pending, will retry");
-                            } else {
+                            if (jArray.toString().contains("errorMessage")) {
                                 logger.info("Error encountered: " + jArray.getJSONObject(0).getString("errorMessage"));
                                 exchange.setProperty(DELIVERY_ERROR_INFORMATION, jArray.getJSONObject(0).getString("errorMessage"));
                                 exchange.setProperty(MESSAGE_DELIVERY_STATUS, false);
+
+                            } else {
+                                logger.info("Still Pending, will retry");
                             }
                         }
                     }
