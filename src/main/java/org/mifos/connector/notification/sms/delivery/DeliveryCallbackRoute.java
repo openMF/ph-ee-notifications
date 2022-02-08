@@ -1,12 +1,12 @@
 package org.mifos.connector.notification.sms.delivery;
 
 
+import com.google.gson.Gson;
 import io.camunda.zeebe.client.ZeebeClient;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
 import org.json.JSONArray;
-import org.mifos.connector.notification.sms.dto.MessageResponseDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
-
+import com.google.gson.Gson;
 import static org.mifos.connector.notification.camel.config.CamelProperties.*;
 import static org.mifos.connector.notification.zeebe.ZeebeVariables.*;
 
@@ -77,7 +77,7 @@ public class DeliveryCallbackRoute extends RouteBuilder{
                     .process(exchange -> {
                         String id = exchange.getProperty(CORRELATION_ID, String.class);
                         JSONArray jArray= new JSONArray (exchange.getIn().getBody(String.class));
-
+                        String post =  new Gson().fromJson(String.valueOf(jArray),String.class);
                         int deliveryStatus = jArray.getJSONObject(0).getInt("deliveryStatus");
                         if(deliveryStatus == 300){
                             logger.info("Passed");
@@ -86,9 +86,9 @@ public class DeliveryCallbackRoute extends RouteBuilder{
                         else {
                             boolean hasError = jArray.getJSONObject(0).getBoolean("hasError");
                             if(!hasError) {
-                                if (jArray.toString().contains("errorMessage")) {
-                                    logger.info("Error encountered: " + jArray.getJSONObject(0).getString("errorMessage"));
-                                    exchange.setProperty(DELIVERY_ERROR_INFORMATION, jArray.getJSONObject(0).getString("errorMessage"));
+                                if (post.contains("errorMessage")) {
+                                    logger.info("Error encountered: " + jArray.getJSONObject(0).get("errorMessage"));
+                                    exchange.setProperty(DELIVERY_ERROR_INFORMATION, jArray.getJSONObject(0).get("errorMessage"));
                                     exchange.setProperty(MESSAGE_DELIVERY_STATUS, false);
 
                                 } else {
@@ -167,6 +167,7 @@ public class DeliveryCallbackRoute extends RouteBuilder{
                 .process(exchange -> {
                     String id = exchange.getProperty(CORRELATION_ID, String.class);
                     JSONArray jArray= new JSONArray (exchange.getIn().getBody(String.class));
+                    String post =  new Gson().fromJson(String.valueOf(jArray),String.class);
                     int deliveryStatus = jArray.getJSONObject(0).getInt("deliveryStatus");
                     if(deliveryStatus == 300){
                         logger.info("Passed");
@@ -175,9 +176,9 @@ public class DeliveryCallbackRoute extends RouteBuilder{
                     else {
                         boolean hasError = jArray.getJSONObject(0).getBoolean("hasError");
                         if(!hasError) {
-                            if (jArray.toString().contains("errorMessage")) {
-                                logger.info("Error encountered: " + jArray.getJSONObject(0).getString("errorMessage"));
-                                exchange.setProperty(DELIVERY_ERROR_INFORMATION, jArray.getJSONObject(0).getString("errorMessage"));
+                            if (post.contains("errorMessage")) {
+                                logger.info("Error encountered: " + jArray.getJSONObject(0).get("errorMessage"));
+                                exchange.setProperty(DELIVERY_ERROR_INFORMATION, jArray.getJSONObject(0).get("errorMessage"));
                                 exchange.setProperty(MESSAGE_DELIVERY_STATUS, false);
 
                             } else {
