@@ -91,13 +91,13 @@ public class DeliveryCallbackRoute extends RouteBuilder{
                             boolean hasError = jsonObject.get("hasError").getAsBoolean();
                             if(!hasError) {
                                 if (jsonObject.has("errorMessage")) {
-                                    if(jsonObject.get("errorMessage") != null) {
-                                        logger.info("Error encountered: " + jsonObject.get("errorMessage"));
-                                        exchange.setProperty(DELIVERY_ERROR_INFORMATION, jsonObject.get("errorMessage"));
+                                    if(jsonObject.get("errorMessage").isJsonNull()) {
+                                        logger.info("Still Pending, will retry");}
+                                    else{
+                                        logger.info("Error encountered: " + jsonObject.get("errorMessage").getAsString());
+                                        exchange.setProperty(DELIVERY_ERROR_INFORMATION, jsonObject.get("errorMessage").getAsString());
                                         exchange.setProperty(MESSAGE_DELIVERY_STATUS, false);
                                     }
-                                } else {
-                                    logger.info("Still Pending, will retry");
                                 }
                             }
                         }
@@ -183,13 +183,13 @@ public class DeliveryCallbackRoute extends RouteBuilder{
                         boolean hasError = jsonObject.get("hasError").getAsBoolean();
                         if(!hasError) {
                             if (jsonObject.has("errorMessage")) {
-                                if(jsonObject.get("errorMessage") != null) {
-                                    logger.info("Error encountered: " + jsonObject.get("errorMessage"));
-                                    exchange.setProperty(DELIVERY_ERROR_INFORMATION, jsonObject.get("errorMessage"));
+                                if(jsonObject.get("errorMessage").isJsonNull()) {
+                                    logger.info("Still Pending, will retry");}
+                                else{
+                                    logger.info("Error encountered: " + jsonObject.get("errorMessage").getAsString());
+                                    exchange.setProperty(DELIVERY_ERROR_INFORMATION, jsonObject.get("errorMessage").getAsString());
                                     exchange.setProperty(MESSAGE_DELIVERY_STATUS, false);
                                 }
-                            } else {
-                                logger.info("Still Pending, will retry");
                             }
                         }
                     }
