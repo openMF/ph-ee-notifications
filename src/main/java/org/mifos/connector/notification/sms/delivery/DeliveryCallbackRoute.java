@@ -80,9 +80,9 @@ public class DeliveryCallbackRoute extends RouteBuilder{
                     .process(exchange -> {
                         String id = exchange.getProperty(CORRELATION_ID, String.class);
                         String body= exchange.getIn().getBody(String.class);
-                        JsonArray jsonParser = JsonParser.parseString(body).getAsJsonArray();
-                        JsonObject jsonObject = jsonParser.get(0).getAsJsonObject();
-                        int deliveryStatus = jsonParser.get(0).getAsJsonObject().get("deliveryStatus").getAsInt();
+                        JsonArray jsonArray = JsonParser.parseString(body).getAsJsonArray();
+                        JsonObject jsonObject = jsonArray.get(0).getAsJsonObject();
+                        int deliveryStatus = jsonObject.get("deliveryStatus").getAsInt();
                         if(deliveryStatus == 300){
                             logger.info("Passed");
                             exchange.setProperty(MESSAGE_DELIVERY_STATUS,true);
@@ -102,29 +102,30 @@ public class DeliveryCallbackRoute extends RouteBuilder{
                             }
                         }
                         Map<String, Object> newVariables = new HashMap<>();
-                       if(exchange.getProperty(MESSAGE_DELIVERY_STATUS).equals(true)){
-                           logger.info("Publishing variables: " + newVariables);
-                           newVariables.put(MESSAGE_DELIVERY_STATUS, exchange.getProperty(MESSAGE_DELIVERY_STATUS));
-                           zeebeClient.newPublishMessageCommand()
-                                   .messageName(CALLBACK_MESSAGE)
-                                   .correlationKey(id)
-                                   .variables(newVariables)
-                                   .timeToLive(Duration.ofMillis(timeToLive))
-                                   .send()
-                                   .join();
-                       }
-                       else if(exchange.getProperty(MESSAGE_DELIVERY_STATUS).equals(false)){
-                           logger.info("Publishing variables: " + newVariables);
-                           newVariables.put(DELIVERY_ERROR_MESSAGE, exchange.getProperty(DELIVERY_ERROR_INFORMATION));
-                           newVariables.put(MESSAGE_DELIVERY_STATUS, exchange.getProperty(MESSAGE_DELIVERY_STATUS));
-                           zeebeClient.newPublishMessageCommand()
-                                   .messageName(CALLBACK_MESSAGE)
-                                   .correlationKey(id)
-                                   .variables(newVariables)
-                                   .timeToLive(Duration.ofMillis(timeToLive))
-                                   .send()
-                                   .join();
-                       }
+                        if(exchange.getProperty(MESSAGE_DELIVERY_STATUS) != null) {
+                            if (exchange.getProperty(MESSAGE_DELIVERY_STATUS).equals(true)) {
+                                logger.info("Publishing variables: " + newVariables);
+                                newVariables.put(MESSAGE_DELIVERY_STATUS, exchange.getProperty(MESSAGE_DELIVERY_STATUS));
+                                zeebeClient.newPublishMessageCommand()
+                                        .messageName(CALLBACK_MESSAGE)
+                                        .correlationKey(id)
+                                        .variables(newVariables)
+                                        .timeToLive(Duration.ofMillis(timeToLive))
+                                        .send()
+                                        .join();
+                            } else if (exchange.getProperty(MESSAGE_DELIVERY_STATUS).equals(false)) {
+                                logger.info("Publishing variables: " + newVariables);
+                                newVariables.put(DELIVERY_ERROR_MESSAGE, exchange.getProperty(DELIVERY_ERROR_INFORMATION));
+                                newVariables.put(MESSAGE_DELIVERY_STATUS, exchange.getProperty(MESSAGE_DELIVERY_STATUS));
+                                zeebeClient.newPublishMessageCommand()
+                                        .messageName(CALLBACK_MESSAGE)
+                                        .correlationKey(id)
+                                        .variables(newVariables)
+                                        .timeToLive(Duration.ofMillis(timeToLive))
+                                        .send()
+                                        .join();
+                            }
+                        }
                        else{
                            logger.info("Publishing created variables to variables: " + newVariables);
                            newVariables.put(CALLBACK_RETRY_COUNT,exchange.getProperty(RETRY_COUNT_CALLBACK));
@@ -172,9 +173,9 @@ public class DeliveryCallbackRoute extends RouteBuilder{
                 .process(exchange -> {
                     String id = exchange.getProperty(CORRELATION_ID, String.class);
                     String body= exchange.getIn().getBody(String.class);
-                    JsonArray jsonParser = JsonParser.parseString(body).getAsJsonArray();
-                    JsonObject jsonObject = jsonParser.get(0).getAsJsonObject();
-                    int deliveryStatus = jsonParser.get(0).getAsJsonObject().get("deliveryStatus").getAsInt();
+                    JsonArray jsonArray = JsonParser.parseString(body).getAsJsonArray();
+                    JsonObject jsonObject = jsonArray.get(0).getAsJsonObject();
+                    int deliveryStatus = jsonObject.get("deliveryStatus").getAsInt();
                     if(deliveryStatus == 300){
                         logger.info("Passed");
                         exchange.setProperty(MESSAGE_DELIVERY_STATUS,true);
@@ -194,28 +195,29 @@ public class DeliveryCallbackRoute extends RouteBuilder{
                         }
                     }
                     Map<String, Object> newVariables = new HashMap<>();
-                    if(exchange.getProperty(MESSAGE_DELIVERY_STATUS).equals(true)){
-                        logger.info("Publishing variables: " + newVariables);
-                        newVariables.put(MESSAGE_DELIVERY_STATUS, exchange.getProperty(MESSAGE_DELIVERY_STATUS));
-                        zeebeClient.newPublishMessageCommand()
-                                .messageName(CALLBACK_MESSAGE)
-                                .correlationKey(id)
-                                .variables(newVariables)
-                                .timeToLive(Duration.ofMillis(timeToLive))
-                                .send()
-                                .join();
-                    }
-                    else if(exchange.getProperty(MESSAGE_DELIVERY_STATUS).equals(false)){
-                        logger.info("Publishing variables: " + newVariables);
-                        newVariables.put(DELIVERY_ERROR_MESSAGE, exchange.getProperty(DELIVERY_ERROR_INFORMATION));
-                        newVariables.put(MESSAGE_DELIVERY_STATUS, exchange.getProperty(MESSAGE_DELIVERY_STATUS));
-                        zeebeClient.newPublishMessageCommand()
-                                .messageName(CALLBACK_MESSAGE)
-                                .correlationKey(id)
-                                .variables(newVariables)
-                                .timeToLive(Duration.ofMillis(timeToLive))
-                                .send()
-                                .join();
+                    if(exchange.getProperty(MESSAGE_DELIVERY_STATUS) != null) {
+                        if (exchange.getProperty(MESSAGE_DELIVERY_STATUS).equals(true)) {
+                            logger.info("Publishing variables: " + newVariables);
+                            newVariables.put(MESSAGE_DELIVERY_STATUS, exchange.getProperty(MESSAGE_DELIVERY_STATUS));
+                            zeebeClient.newPublishMessageCommand()
+                                    .messageName(CALLBACK_MESSAGE)
+                                    .correlationKey(id)
+                                    .variables(newVariables)
+                                    .timeToLive(Duration.ofMillis(timeToLive))
+                                    .send()
+                                    .join();
+                        } else if (exchange.getProperty(MESSAGE_DELIVERY_STATUS).equals(false)) {
+                            logger.info("Publishing variables: " + newVariables);
+                            newVariables.put(DELIVERY_ERROR_MESSAGE, exchange.getProperty(DELIVERY_ERROR_INFORMATION));
+                            newVariables.put(MESSAGE_DELIVERY_STATUS, exchange.getProperty(MESSAGE_DELIVERY_STATUS));
+                            zeebeClient.newPublishMessageCommand()
+                                    .messageName(CALLBACK_MESSAGE)
+                                    .correlationKey(id)
+                                    .variables(newVariables)
+                                    .timeToLive(Duration.ofMillis(timeToLive))
+                                    .send()
+                                    .join();
+                        }
                     }
                     else{
                         logger.info("Publishing created variables to variables: " + newVariables);
