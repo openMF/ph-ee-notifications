@@ -49,7 +49,10 @@ velocity:
 notifications:
   local:
     host: 0.0.0.0:5000
-  enabled: true
+  sucess:
+    enabled: false
+  failure:
+    enabled: true
 
 management:
   endpoint:
