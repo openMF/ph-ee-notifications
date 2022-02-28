@@ -38,3 +38,7 @@ hostconfig:
 velocity:
   success: keyword
   failure: message
+
+logging:
+  level:
+    ROOT: ERROR
