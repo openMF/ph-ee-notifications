@@ -43,25 +43,25 @@ public class SendMessageRoute extends RouteBuilder {
     @Value("${zeebe.client.ttl}")
     private int timeToLive;
 
-    @Value("${hostconfig.protocol}")
+    @Value("${messagegatewayconfig.protocol}")
     private String protocol;
 
-    @Value("${hostconfig.host}")
+    @Value("${messagegatewayconfig.host}")
     private String address;
 
-    @Value("${hostconfig.port}")
+    @Value("${messagegatewayconfig.port}")
     private int port;
 
-    @Value("${fineractconfig.tenantid}")
+    @Value("${operationsconfig.tenantid}")
     private String tenantId;
 
-    @Value("${fineractconfig.tenantidvalue}")
+    @Value("${operationsconfig.tenantidvalue}")
     private String tenantIdValue;
 
-    @Value("${fineractconfig.tenantappkey}")
+    @Value("${operationsconfig.tenantappkey}")
     private String tenantAppKey;
 
-    @Value("${fineractconfig.tenantappvalue}")
+    @Value("${operationsconfig.tenantappvalue}")
     private String tenantAppKeyValue;
 
 
@@ -91,7 +91,7 @@ public class SendMessageRoute extends RouteBuilder {
                     .log("${body}")
                     .setHeader(Exchange.HTTP_METHOD, simple("POST"))
                     .setHeader(Exchange.CONTENT_TYPE, constant("application/json"))
-                    .to(String.format("%s://%s:%d/sms/?bridgeEndpoint=true", protocol, address, port))
+                    .to(String.format("%s://%s/sms/?bridgeEndpoint=true", protocol, address))
                     .log(LoggingLevel.INFO, "Sending sms to message gateway completed")
                    ;
 

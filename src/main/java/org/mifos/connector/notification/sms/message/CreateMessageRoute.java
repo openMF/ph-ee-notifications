@@ -41,20 +41,37 @@ public class CreateMessageRoute extends RouteBuilder {
     @Value("${zeebe.client.ttl}")
     private int timeToLive;
 
-    @Value("${velocity.failure}")
-    private String failureKeyword;
+    @Value("${velocity.transactionid}")
+    private String transactionId;
+
+    @Value("${velocity.amount}")
+    private String amount;
+
+    @Value("${velocity.date}")
+    private String date;
+
+    @Value("${velocity.account}")
+    private String account;
+
+
+
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Override
         public void configure() throws Exception {
 
-            from("direct:create-messages")
+            from("direct:create-failure-messages")
                     .id("create-messages")
                     .log(LoggingLevel.INFO, "Creating message")
                     .process(exchange ->{
                         StringWriter message = new StringWriter();
-                        templateConfig.getVelocityContext().put(failureKeyword,exchange.getProperty(CORRELATION_ID));
+                        String accountId = exchange.getProperty(ACCOUNT_ID).toString();
+                        accountId= accountId.replaceAll("\\d(?=(?:\\D*\\d){4})", "*");
+                        templateConfig.getVelocityContext().put(transactionId,exchange.getProperty(CORRELATION_ID));
+                        templateConfig.getVelocityContext().put(amount,exchange.getProperty(TRANSACTION_AMOUNT));
+                        templateConfig.getVelocityContext().put(date,exchange.getProperty(DATE));
+                        templateConfig.getVelocityContext().put(account,accountId);
                         templateConfig.getFailureTemplate().merge(templateConfig.getVelocityContext(),message);
                         exchange.setProperty(DELIVERY_MESSAGE, message);
                         Map<String, Object> newVariables = new HashMap<>();
@@ -68,7 +85,38 @@ public class CreateMessageRoute extends RouteBuilder {
                     .log(LoggingLevel.INFO, "Creating message completed with message :${exchangeProperty."+DELIVERY_MESSAGE+"}")
                    ;
 
-        }
+
+
+        from("direct:create-success-messages")
+                .id("create-success messages")
+                .log(LoggingLevel.INFO, "Drafting success message")
+                .process(exchange ->{
+                    StringWriter message = new StringWriter();
+                    String accountId = exchange.getProperty(ACCOUNT_ID).toString();
+                    accountId= accountId.replaceAll("\\d(?=(?:\\D*\\d){4})", "*");
+                    templateConfig.getVelocityContext().put(amount,exchange.getProperty(TRANSACTION_AMOUNT));
+                    templateConfig.getVelocityContext().put(date,exchange.getProperty(DATE));
+                    templateConfig.getVelocityContext().put(account,accountId);
+                    templateConfig.getSuccessTemplate().merge(templateConfig.getVelocityContext(),message);
+                    exchange.setProperty(DELIVERY_MESSAGE, message);
+                    Map<String, Object> newVariables = new HashMap<>();
+                    newVariables.put(MESSAGE_TO_SEND, exchange.getProperty(DELIVERY_MESSAGE).toString());
+                    newVariables.put(MESSAGE_INTERNAL_ID,exchange.getProperty(INTERNAL_ID).toString());
+                    zeebeClient.newSetVariablesCommand(Long.parseLong(exchange.getProperty(INTERNAL_ID).toString()))
+                            .variables(newVariables)
+                            .send()
+                            .join();
+                })
+                .log(LoggingLevel.INFO, "Creating message completed with message :${exchangeProperty."+DELIVERY_MESSAGE+"}")
+        ;
+
+
+
+
+
+
+
+    }
     }
 
 

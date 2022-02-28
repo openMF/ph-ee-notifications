@@ -16,6 +16,11 @@ zeebe:
   broker:
     contactpoint: "localhost:26500"
 
+# endpoint configuration
+endpoints:
+  shutdown:
+    enabled: true
+
 provider:
   telerivet:
     enabled: true
@@ -24,21 +29,42 @@ provider:
     enabled: false
     id: 3
 
-fineractconfig:
+operationsconfig:
   tenantid: "Fineract-Platform-TenantId"
   tenantidvalue : "default"
   tenantappkey: "Fineract-Tenant-App-Key"
   tenantappvalue: "123456543234abdkdkdkd"
 
-hostconfig:
+messagegatewayconfig:
   host: 127.0.0.1
   protocol: http
   port: 9191
 
 velocity:
-  success: keyword
-  failure: message
+  transactionid: transactionid
+  amount: amount
+  date: date
+  account: account
+
+notifications:
+  local:
+    host: 0.0.0.0:5000
+  sucess:
+    enabled: false
+  failure:
+    enabled: true
+
+management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      liveness:
+        enabled: true
+      readiness:
+        enabled: true
 
 logging:
   level:
     ROOT: ERROR
+

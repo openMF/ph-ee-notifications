@@ -16,10 +16,6 @@ import java.io.StringWriter;
 @Configuration
 public class TemplateConfig{
 
-    @Value("${velocity.success}")
-    private String successKeyword;
-
-
 
     static VelocityEngine vc = new VelocityEngine();
 
