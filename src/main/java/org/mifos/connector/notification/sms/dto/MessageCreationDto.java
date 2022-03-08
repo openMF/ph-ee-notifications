@@ -35,7 +35,13 @@ public class MessageCreationDto {
                 .atZone(ZoneId.systemDefault()).toLocalDate();
         String amount = (String) variables.get(AMOUNT);
         Exchange exchange = new DefaultExchange(camelContext);
-        exchange.setProperty(CORRELATION_ID, transactionId);
+
+        if(variables.containsKey(SERVER_TRANSACTION_RECEIPT_NUMBER)){
+            exchange.setProperty(CORRELATION_ID, variables.get(SERVER_TRANSACTION_RECEIPT_NUMBER).toString());
+        }
+        else {
+            exchange.setProperty(CORRELATION_ID, transactionId);
+        }
         exchange.setProperty(DATE, localDate);
         exchange.setProperty(ACCOUNT_ID,account);
         exchange.setProperty(TRANSACTION_AMOUNT,amount);
