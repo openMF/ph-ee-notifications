@@ -19,4 +19,5 @@ public class ZeebeVariables {
     public static final String ACCOUNT = "accountId";
     public static final String AMOUNT = "amount";
     public static final String DELIVERY_ERROR_MESSAGE = "deliveryErrorMessage";
+    public static final String SERVER_TRANSACTION_RECEIPT_NUMBER = "mpesaReceiptNumber";
 }
