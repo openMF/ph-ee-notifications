@@ -90,9 +90,6 @@ public class ZeebeWorkers {
                     logger.info("Job '{}' started from process '{}' with key {}", job.getType(), job.getBpmnProcessId(), job.getKey());
 
                     Map<String, Object> variables = job.getVariablesAsMap();
-                    TransactionChannelCollectionRequestDTO channelRequest = objectMapper.readValue(
-                            (String) variables.get("channelRequest"), TransactionChannelCollectionRequestDTO .class);
-
                     Exchange exchange = new DefaultExchange(camelContext);
                     exchange.setProperty(MOBILE_NUMBER,variables.get(PHONE_NUMBER));
                     exchange.setProperty(CORRELATION_ID, variables.get(TRANSACTION_ID));
