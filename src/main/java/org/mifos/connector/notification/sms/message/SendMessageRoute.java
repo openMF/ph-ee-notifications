@@ -1,27 +1,18 @@
 package org.mifos.connector.notification.sms.message;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.camunda.zeebe.client.ZeebeClient;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.mifos.connector.notification.provider.config.ProviderConfig;
-import org.mifos.connector.notification.zeebe.ZeebeVariables;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.mifos.connector.common.channel.dto.TransactionChannelCollectionRequestDTO;
-
-import java.time.Duration;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.mifos.connector.notification.camel.config.CamelProperties.*;
-import static org.mifos.connector.notification.zeebe.ZeebeVariables.CALLBACK_MESSAGE;
 
 @Component
 public class SendMessageRoute extends RouteBuilder {
@@ -30,15 +21,6 @@ public class SendMessageRoute extends RouteBuilder {
 
     @Autowired
     private ProviderConfig providerConfig;
-
-    @Autowired
-    private ZeebeVariables zeebeVariables;
-
-    @Autowired
-    private ZeebeClient zeebeClient;
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @Value("${zeebe.client.ttl}")
     private int timeToLive;
@@ -63,8 +45,6 @@ public class SendMessageRoute extends RouteBuilder {
 
     @Value("${operationsconfig.tenantappvalue}")
     private String tenantAppKeyValue;
-
-
 
     @Override
         public void configure() throws Exception {

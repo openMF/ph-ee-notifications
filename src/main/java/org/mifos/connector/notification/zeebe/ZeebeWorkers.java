@@ -1,13 +1,11 @@
 package org.mifos.connector.notification.zeebe;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.zeebe.client.ZeebeClient;
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.support.DefaultExchange;
-import org.mifos.connector.common.channel.dto.TransactionChannelCollectionRequestDTO;
 import org.mifos.connector.notification.sms.dto.MessageCreationDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,8 +14,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.time.Duration;
-import java.util.HashMap;
 import java.util.Map;
 
 import static org.mifos.connector.notification.camel.config.CamelProperties.*;
@@ -36,9 +32,6 @@ public class ZeebeWorkers {
 
     @Autowired
     private ZeebeClient zeebeClient;
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @Autowired
     private MessageCreationDto messageCreationDto;
@@ -113,8 +106,7 @@ public class ZeebeWorkers {
                 .handler((client, job) -> {
                     logger.info("Job '{}' started from process '{}' with key {}", job.getType(), job.getBpmnProcessId(), job.getKey());
                     Map<String, Object> variables = job.getVariablesAsMap();
-                    variables.put(CALLBACK_RETRY_COUNT, 1 + (Integer) variables.getOrDefault(CALLBACK_RETRY_COUNT, 0));
-                    String transactionId = (String) variables.get(TRANSACTION_ID);
+                    variables.put(CALLBACK_RETRY_COUNT, 1 + (Integer) variables.getOrDefault(CALLBACK_RETRY_COUNT, 0));                    
                     Exchange exchange = new DefaultExchange(camelContext);
                     exchange.setProperty(INTERNAL_ID,variables.get(MESSAGE_INTERNAL_ID));
                     exchange.setProperty(CORRELATION_ID, variables.get(TRANSACTION_ID));
