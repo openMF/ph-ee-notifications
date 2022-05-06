@@ -7,7 +7,6 @@ import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.support.DefaultExchange;
-import org.mifos.connector.common.channel.dto.TransactionChannelCollectionRequestDTO;
 import org.mifos.connector.notification.sms.dto.MessageCreationDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,8 +15,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.time.Duration;
-import java.util.HashMap;
 import java.util.Map;
 
 import static org.mifos.connector.notification.camel.config.CamelProperties.*;

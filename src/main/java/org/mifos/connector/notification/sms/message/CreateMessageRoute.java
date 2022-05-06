@@ -4,12 +4,8 @@ package org.mifos.connector.notification.sms.message;
 import io.camunda.zeebe.client.ZeebeClient;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.velocity.Template;
-import org.apache.velocity.VelocityContext;
-import org.json.JSONObject;
 import org.mifos.connector.notification.provider.config.ProviderConfig;
 import org.mifos.connector.notification.template.TemplateConfig;
-import org.mifos.connector.notification.zeebe.ZeebeVariables;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +13,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.StringWriter;
-import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
