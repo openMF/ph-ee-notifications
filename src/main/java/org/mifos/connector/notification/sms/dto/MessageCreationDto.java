@@ -11,7 +11,6 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.Date;
 import java.util.Map;
 
 import static org.mifos.connector.notification.camel.config.CamelProperties.*;

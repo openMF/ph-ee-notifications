@@ -1,14 +1,11 @@
 package org.mifos.connector.notification.template;
 
+import org.apache.velocity.Template;
+import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.Template;
-
-import java.io.StringWriter;
 
 
 

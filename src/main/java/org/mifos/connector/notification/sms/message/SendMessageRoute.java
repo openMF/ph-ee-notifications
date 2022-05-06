@@ -14,14 +14,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.mifos.connector.common.channel.dto.TransactionChannelCollectionRequestDTO;
-
-import java.time.Duration;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.mifos.connector.notification.camel.config.CamelProperties.*;
-import static org.mifos.connector.notification.zeebe.ZeebeVariables.CALLBACK_MESSAGE;
 
 @Component
 public class SendMessageRoute extends RouteBuilder {
