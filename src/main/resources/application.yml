@@ -52,7 +52,7 @@ notifications:
   sucess:
     enabled: false
   failure:
-    enabled: true
+    enabled: false
 
 management:
   endpoint:
