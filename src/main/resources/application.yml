@@ -66,5 +66,5 @@ management:
 
 logging:
   level:
-    ROOT: ERROR
+    root: ERROR
 
