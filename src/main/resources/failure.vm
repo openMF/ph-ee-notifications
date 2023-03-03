@@ -1,2 +1,5 @@
-Apologies for the delay, we are processing your payment for KSh $amount, Receipt Number paymenthub:$transactionid.
+Apologies for the delay, we are processing your payment for Transaction type: $txnType with amount: $currency $amount,Receipt Number paymenthub:$transactionid.
+The reason for failure was: $failType
 We will let you know when it's credited into your oaf account. Call us on  0800723355 if you have any questions
+
+
