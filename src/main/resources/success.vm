@@ -1,1 +1,3 @@
-Hello $account Last payment: KSh $amount. Receipt Number paymenthub:$transactionid. was successful on $date
+Hello $account
+Last payment for transaction type: $txnType with amount: $currency $amount,
+Receipt Number paymenthub:$transactionid was successful on $date

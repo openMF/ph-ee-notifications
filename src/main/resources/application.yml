@@ -6,7 +6,6 @@ camel:
     json-jackson:
       auto-discover-object-mapper: true
 
-
 zeebe:
   client:
     max-execution-threads: 100
@@ -45,6 +44,18 @@ velocity:
   amount: amount
   date: date
   account: account
+  failure_type: failType
+  txnType: txnType
+  currency: currency
+  defaults:
+    transactionid: "123456789"
+    amount: "100"
+    account: "1234567890"
+    failure_type: "Reason not available"
+    txnType: "transfer"
+    currency: "USD"
+
+
 
 notifications:
   local:
@@ -66,5 +77,5 @@ management:
 
 logging:
   level:
-    root: ERROR
+    root: info
 

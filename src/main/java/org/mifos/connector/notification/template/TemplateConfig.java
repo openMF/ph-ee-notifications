@@ -18,7 +18,7 @@ public class TemplateConfig{
 
 
     static {
-        /** Initialisation du moteur velocity */
+        /** Initialisation velocity */
         vc.setProperty(RuntimeConstants.RESOURCE_LOADER, "class,file");
         vc.setProperty(RuntimeConstants.RUNTIME_LOG_LOGSYSTEM_CLASS, "org.apache.velocity.runtime.log.Log4JLogChute");
         vc.setProperty("runtime.log.logsystem.log4j.logger", "VELLOGGER");
