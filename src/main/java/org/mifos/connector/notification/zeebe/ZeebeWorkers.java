@@ -46,7 +46,7 @@ public class ZeebeWorkers {
     @PostConstruct
     public void setupWorkers() {
         zeebeClient.newWorker()
-                .jobType("transaction-failure")
+                .jobType("transaction_failure")
                 .handler((client, job) -> {
                     logger.info("Job '{}' started from process '{}' with key {}", job.getType(), job.getBpmnProcessId(), job.getKey());
                     Map<String, Object> variables = job.getVariablesAsMap();
@@ -59,13 +59,13 @@ public class ZeebeWorkers {
                             .join()
                     ;
                 })
-                .name("transaction-failure")
+                .name("transaction_failure")
                 .maxJobsActive(workerMaxJobs)
                 .open();
 
 
         zeebeClient.newWorker()
-                .jobType("transaction-success")
+                .jobType("transaction_success")
                 .handler((client, job) -> {
                     logger.info("Job '{}' started from process '{}' with key {}", job.getType(), job.getBpmnProcessId(), job.getKey());
                     Map<String, Object> variables = job.getVariablesAsMap();
@@ -77,54 +77,8 @@ public class ZeebeWorkers {
                             .send()
                     ;
                 })
-                .name("transaction-success")
+                .name("transaction_success")
                 .maxJobsActive(workerMaxJobs)
                 .open();
-
-        zeebeClient.newWorker()
-                .jobType("notification-service")
-                .handler((client, job) -> {
-                    logger.info("Job '{}' started from process '{}' with key {}", job.getType(), job.getBpmnProcessId(), job.getKey());
-
-                    Map<String, Object> variables = job.getVariablesAsMap();
-                    Exchange exchange = new DefaultExchange(camelContext);
-                    exchange.setProperty(MOBILE_NUMBER,variables.get(PHONE_NUMBER));
-                    exchange.setProperty(CORRELATION_ID, variables.get(TRANSACTION_ID));
-                    exchange.setProperty(INTERNAL_ID,variables.get(MESSAGE_INTERNAL_ID));
-                    exchange.setProperty(DELIVERY_MESSAGE,variables.get(MESSAGE_TO_SEND));
-
-                    producerTemplate.send("direct:send-notifications", exchange);
-
-
-                    client.newCompleteCommand(job.getKey())
-                            .send()
-                            .join()
-                    ;
-                })
-                .name("notification-service")
-                .maxJobsActive(workerMaxJobs)
-                .open();
-
-        zeebeClient.newWorker()
-                .jobType("get-notification-status")
-                .handler((client, job) -> {
-                    logger.info("Job '{}' started from process '{}' with key {}", job.getType(), job.getBpmnProcessId(), job.getKey());
-                    Map<String, Object> variables = job.getVariablesAsMap();
-                    variables.put(CALLBACK_RETRY_COUNT, 1 + (Integer) variables.getOrDefault(CALLBACK_RETRY_COUNT, 0));
-                    String transactionId = (String) variables.get(TRANSACTION_ID);
-                    Exchange exchange = new DefaultExchange(camelContext);
-                    exchange.setProperty(INTERNAL_ID,variables.get(MESSAGE_INTERNAL_ID));
-                    exchange.setProperty(CORRELATION_ID, variables.get(TRANSACTION_ID));
-                    exchange.setProperty(RETRY_COUNT_CALLBACK, variables.get(CALLBACK_RETRY_COUNT));
-                    producerTemplate.send("direct:delivery-notifications", exchange);
-                   client.newCompleteCommand(job.getKey())
-                           .send()
-                           .join()
-                   ;
-                })
-                .name("get-notification-status")
-                .maxJobsActive(workerMaxJobs)
-                .open();
-
     }
 }
