@@ -33,16 +33,26 @@ public class TemplateConfig{
 
 
     @Bean
-    public Template getFailureTemplate() throws Exception {
-        Template t = vc.getTemplate("/failure.vm");
+    public Template getSMSFailureTemplate() throws Exception {
+        Template t = vc.getTemplate("/sms_failure.vm");
         return t;
     }
     @Bean
-    public Template getSuccessTemplate() throws Exception {
-        Template t = vc.getTemplate("/success.vm");
+    public Template getSMSSuccessTemplate() throws Exception {
+        Template t = vc.getTemplate("/sms_success.vm");
         return t;
     }
 
+    @Bean
+    public Template getEmailFailureTemplate() throws Exception {
+        Template t = vc.getTemplate("/email_failure.vm");
+        return t;
+    }
+    @Bean
+    public Template getEmailSuccessTemplate() throws Exception {
+        Template t = vc.getTemplate("/email_success.vm");
+        return t;
+    }
     @Bean
     public VelocityContext getVelocityContext(){
         VelocityContext vc = new VelocityContext();

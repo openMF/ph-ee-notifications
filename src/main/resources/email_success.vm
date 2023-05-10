@@ -1,0 +1,14 @@
+Dear Account Holder,
+
+Thank you for your payment. The last payment for transaction type $txnType with amount $currency $amount was successful.
+
+Receipt Number: paymenthub:$transactionid
+Account Number: $account
+Date: $date
+
+If you have any questions or concerns regarding this payment, please don't hesitate to contact us.
+
+Thank you for choosing PaymentHub.
+
+Best regards,
+PaymentHub Team

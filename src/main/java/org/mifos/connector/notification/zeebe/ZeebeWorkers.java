@@ -53,6 +53,7 @@ public class ZeebeWorkers {
                     Exchange exchange = messageCreationDto.setPropertiesForMessage(variables);
                     String internalId = String.valueOf(job.getProcessInstanceKey());
                     exchange.setProperty(INTERNAL_ID,internalId);
+                    exchange.setProperty(TYPE,job.getVariablesAsMap().get(TYPE));
                     producerTemplate.send("direct:create-failure-messages", exchange);
                     client.newCompleteCommand(job.getKey())
                             .send()
@@ -72,6 +73,7 @@ public class ZeebeWorkers {
                     Exchange exchange = messageCreationDto.setPropertiesForMessage(variables);
                     String internalId = String.valueOf(job.getProcessInstanceKey());
                     exchange.setProperty(INTERNAL_ID,internalId);
+                    exchange.setProperty(TYPE,job.getVariablesAsMap().get(TYPE));
                     producerTemplate.send("direct:create-success-messages", exchange);
                     client.newCompleteCommand(job.getKey())
                             .send()

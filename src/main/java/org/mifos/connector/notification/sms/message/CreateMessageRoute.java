@@ -2,7 +2,6 @@ package org.mifos.connector.notification.sms.message;
 
 
 import io.camunda.zeebe.client.ZeebeClient;
-import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
 import org.mifos.connector.notification.provider.config.ProviderConfig;
@@ -49,12 +48,23 @@ public class CreateMessageRoute extends RouteBuilder {
                     .id("create-messages")
                     .log(LoggingLevel.INFO, "Creating message")
                     .process(exchange ->{
-                        StringWriter message = new StringWriter();
-                        TemplateConfig config = templateDefaultConfig.replaceTemplatePlaceholders(templateConfig,exchange);
-                        config.getFailureTemplate().merge(templateConfig.getVelocityContext(),message);
-                        exchange.setProperty(DELIVERY_MESSAGE, message);
                         Map<String, Object> newVariables = new HashMap<>();
-                        newVariables.put(MESSAGE_TO_SEND, exchange.getProperty(DELIVERY_MESSAGE).toString());
+                        if(exchange.getProperty(TYPE).equals(EMAIL_AND_SMS) || exchange.getProperty(TYPE).equals(EMAIL_TYPE)) {
+                            StringWriter email = new StringWriter();
+                            TemplateConfig config = templateDefaultConfig.replaceTemplatePlaceholders(templateConfig, exchange);
+                            config.getEmailFailureTemplate().merge(templateConfig.getVelocityContext(), email);
+                            exchange.setProperty(DELIVERY_EMAIL, email);
+                            newVariables.put(EMAIL_TO_SEND, exchange.getProperty(DELIVERY_EMAIL).toString());
+                        }
+                        if(exchange.getProperty(TYPE).equals(EMAIL_AND_SMS) || exchange.getProperty(TYPE).equals(SMS_TYPE)) {
+                            StringWriter message = new StringWriter();
+                            TemplateConfig config = templateDefaultConfig.replaceTemplatePlaceholders(templateConfig, exchange);
+                            config.getSMSFailureTemplate().merge(templateConfig.getVelocityContext(), message);
+                            exchange.setProperty(DELIVERY_MESSAGE, message);
+                            newVariables.put(MESSAGE_TO_SEND, exchange.getProperty(DELIVERY_MESSAGE).toString());
+                        }
+
+//                        newVariables.put(MESSAGE_TO_SEND, exchange.getProperty(DELIVERY_MESSAGE).toString());
                         newVariables.put(MESSAGE_INTERNAL_ID,exchange.getProperty(INTERNAL_ID).toString());
                         zeebeClient.newSetVariablesCommand(Long.parseLong(exchange.getProperty(INTERNAL_ID).toString()))
                                 .variables(newVariables)
@@ -71,8 +81,15 @@ public class CreateMessageRoute extends RouteBuilder {
                 .log(LoggingLevel.INFO, "Drafting success message")
                 .process(exchange ->{
                     StringWriter message = new StringWriter();
-                    TemplateConfig config = templateDefaultConfig.replaceTemplatePlaceholders(templateConfig,exchange);
-                    config.getSuccessTemplate().merge(templateConfig.getVelocityContext(),message);
+                    if(exchange.getProperty(TYPE).equals(EMAIL_TYPE)){
+                        TemplateConfig config = templateDefaultConfig.replaceTemplatePlaceholders(templateConfig,exchange);
+                        config.getEmailSuccessTemplate().merge(templateConfig.getVelocityContext(),message);
+                    }
+                    if(exchange.getProperty(TYPE).equals(SMS_TYPE)){
+                        TemplateConfig config = templateDefaultConfig.replaceTemplatePlaceholders(templateConfig,exchange);
+                        config.getSMSSuccessTemplate().merge(templateConfig.getVelocityContext(),message);
+                    }
+
                     exchange.setProperty(DELIVERY_MESSAGE, message);
                     Map<String, Object> newVariables = new HashMap<>();
                     newVariables.put(MESSAGE_TO_SEND, exchange.getProperty(DELIVERY_MESSAGE).toString());
