@@ -1,0 +1,14 @@
+Dear Account Holder,
+
+We apologize for the delay in processing your payment for Transaction type: $txnType with amount: $currency $amount.
+
+Unfortunately, we were unable to process your payment due to the following reason: $failType.
+
+We are working to resolve this issue and will update you as soon as your payment has been credited to your OAF account.
+
+If you have any questions or concerns regarding this payment, please don't hesitate to contact us at 0800723355.
+
+Thank you for choosing PaymentHub.
+
+Best regards,
+PaymentHub Team

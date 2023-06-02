@@ -17,11 +17,13 @@ public class CamelProperties {
     public static final int PROVIDER_ID = 1;
     public static  String DELIVERY_STATUS = "deliveryStatus";
     public static String DELIVERY_MESSAGE = "deliveryMessage";
+    public static String DELIVERY_EMAIL = "deliveryEmail";
+
     public static final String DATE = "originDate";
     public static final String ACCOUNT_ID = "accountId";
     public static final String TRANSACTION_AMOUNT = "amount";
     public static final String RETRY_COUNT_CALLBACK = "callbackRetry";
     public static final String ERROR_DESCRIPTION = "errorDescription";
     public static final String CURRENCY = "currency";
-
+    public static final String TYPE = "type";//communication medium email/SMS
 }
