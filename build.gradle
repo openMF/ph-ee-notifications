@@ -26,7 +26,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.telerivet:TelerivetAPIClient:1.5.0'
+    implementation 'com.telerivet:TelerivetAPIClient:1.7.0'
     implementation 'org.mifos:ph-ee-connector-common:1.0.0-SNAPSHOT'
     implementation 'org.apache.camel.springboot:camel-spring-boot-starter:3.12.0'
     implementation("org.springframework.boot:spring-boot-starter-web:2.5.5")
