@@ -6,7 +6,6 @@ plugins {
     id 'java'
     id 'maven-publish'
     id 'eclipse'
-    
     id 'org.springframework.boot' version '2.6.2'
 }
 
@@ -33,6 +32,7 @@ dependencies {
     implementation 'com.telerivet:TelerivetAPIClient:1.7.0'
     implementation 'org.mifos:ph-ee-connector-common:1.0.0-SNAPSHOT'
     implementation 'org.apache.camel.springboot:camel-spring-boot-starter:3.12.0'
+    implementation 'org.springframework.boot:spring-boot-starter:2.5.5'
     implementation("org.springframework.boot:spring-boot-starter-web:2.5.5")
     implementation "org.springframework.boot:spring-boot-starter-actuator:$springBootVersion"
     implementation 'org.apache.camel:camel-endpointdsl:3.12.0'
