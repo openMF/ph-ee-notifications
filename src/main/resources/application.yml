@@ -64,10 +64,9 @@ notifications:
   failure:
     enabled: false
 
-
-server:
-  port: 5000
 management:
+#  server:
+#    port: 5000
   endpoint:
     health:
       enabled: true
@@ -81,4 +80,3 @@ management:
 logging:
   level:
     root: INFO
-
